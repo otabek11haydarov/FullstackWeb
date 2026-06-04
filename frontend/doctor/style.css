@@ -1,0 +1,106 @@
+/* Doctor Profile Specific Styles */
+.patient-history-modal .modal-content {
+  background: var(--glass-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--glass-border);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+  background: linear-gradient(135deg, rgba(15, 12, 41, 0.8) 0%, rgba(48, 43, 99, 0.8) 50%, rgba(36, 36, 62, 0.8) 100%);
+  color: white;
+}
+
+.patient-history-modal .modal-header {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.vital-tag {
+  background: rgba(0, 210, 255, 0.1);
+  color: #00d2ff;
+  border: 1px solid rgba(0, 210, 255, 0.3);
+  box-shadow: 0 0 10px rgba(0, 210, 255, 0.2);
+  padding: 4px 12px;
+  border-radius: 50rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.medical-timeline {
+  position: relative;
+  padding-left: 30px;
+}
+
+.medical-timeline::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 11px;
+  width: 2px;
+  background: rgba(0, 210, 255, 0.3);
+  box-shadow: 0 0 8px rgba(0, 210, 255, 0.5);
+}
+
+.timeline-item {
+  position: relative;
+  margin-bottom: 24px;
+}
+
+.timeline-icon {
+  position: absolute;
+  left: -30px;
+  top: 0;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #00d2ff;
+  box-shadow: 0 0 12px #00d2ff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #121212;
+  font-size: 0.7rem;
+}
+
+.treatment-card {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.treatment-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.treatment-list li {
+  position: relative;
+  padding-left: 20px;
+  margin-bottom: 12px;
+  color: #e2e8f0;
+}
+
+.treatment-list li::before {
+  content: '•';
+  color: #00d2ff;
+  font-size: 1.5rem;
+  position: absolute;
+  left: 0;
+  top: -5px;
+}
+
+.btn-cyan-glow {
+  background: rgba(0, 210, 255, 0.1);
+  color: #00d2ff;
+  border: 1px solid #00d2ff;
+  box-shadow: 0 0 15px rgba(0, 210, 255, 0.4);
+  transition: all 0.3s ease;
+}
+
+.btn-cyan-glow:hover {
+  background: #00d2ff;
+  color: #121212;
+  box-shadow: 0 0 25px rgba(0, 210, 255, 0.6);
+}

@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Medical Record Management System - My Patients</title>
+  
+  <script src="../theme-init.js"></script>
+  
+  <link rel="icon" href="../assets/logo.png">
+  <link rel="stylesheet" href="../global.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <style>
+    :root {
+      --neon-cyan: #00f5ff;
+      --neon-purple: #7b2ff7;
+      --neon-pink: #f107a3;
+      --bg-dark: #12121a;
+      --glass-panel: rgba(255, 255, 255, 0.03);
+      --glass-border: rgba(255, 255, 255, 0.1);
+    }
+    
+    body {
+      background: radial-gradient(circle at 20% 50%, rgba(123, 47, 247, 0.15) 0%, transparent 50%),
+                  radial-gradient(circle at 80% 20%, rgba(0, 245, 255, 0.1) 0%, transparent 40%),
+                  var(--bg-dark);
+      color: #fff;
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      min-height: 100vh;
+    }
+
+    .app-container {
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+      padding: 1.5rem;
+      gap: 1.5rem;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 250px;
+      background: var(--glass-panel);
+      backdrop-filter: blur(20px);
+      border-radius: 20px;
+      border: 1px solid var(--glass-border);
+      padding: 2rem 1rem;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 3rem;
+      padding-left: 1rem;
+    }
+
+    .nav-item {
+      padding: 0.8rem 1.5rem;
+      border-radius: 12px;
+      color: rgba(255, 255, 255, 0.6);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 0.5rem;
+      transition: all 0.3s ease;
+      font-weight: 500;
+    }
+
+    .nav-item:hover {
+      color: #fff;
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .nav-item.active {
+      background: linear-gradient(90deg, rgba(123, 47, 247, 0.15), transparent);
+      color: #e2b4ff;
+      border-left: 3px solid var(--neon-purple);
+      box-shadow: -5px 0 15px rgba(123, 47, 247, 0.2);
+    }
+
+    /* Main Content */
+    .main-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      padding-right: 0.5rem;
+    }
+    
+    .main-content::-webkit-scrollbar { width: 6px; }
+    .main-content::-webkit-scrollbar-thumb { background: var(--glass-border); border-radius: 3px; }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 2rem;
+    }
+
+    .header-controls {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+    }
+
+    .icon-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--glass-panel);
+      border: 1px solid var(--glass-border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      cursor: pointer;
+    }
+    
+    .user-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--neon-purple), var(--neon-cyan));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+    }
+
+    /* Patient Card */
+    .patient-card {
+      background: var(--glass-panel);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      border: 1px solid var(--glass-border);
+      padding: 1.5rem;
+      transition: all 0.3s;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+    .patient-card:hover {
+      background: rgba(255,255,255,0.05);
+      border-color: rgba(0, 245, 255, 0.3);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2), 0 0 20px rgba(0, 245, 255, 0.1);
+      transform: translateY(-5px);
+    }
+
+    .patient-avatar-lg {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0));
+      border: 2px solid var(--neon-cyan);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #fff;
+    }
+
+    .btn-neon-glow {
+      background: transparent;
+      color: var(--neon-cyan);
+      border: 1px solid var(--neon-cyan);
+      border-radius: 20px;
+      padding: 0.5rem 1.5rem;
+      font-weight: 500;
+      transition: all 0.3s;
+      text-decoration: none;
+      display: inline-block;
+      text-align: center;
+    }
+    .btn-neon-glow:hover {
+      background: var(--neon-cyan);
+      color: #000;
+      box-shadow: 0 0 15px var(--neon-cyan);
+    }
+    
+    .disease-tag {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 12px;
+      padding: 3px 10px;
+      font-size: 0.8rem;
+      color: #aaa;
+      display: inline-block;
+      margin-right: 5px;
+      margin-bottom: 5px;
+    }
+    .disease-tag.severe {
+      color: #f107a3;
+      border-color: rgba(241, 7, 163, 0.3);
+      background: rgba(241, 7, 163, 0.05);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app-container">
+    
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="brand">
+        <img src="../assets/logo.png" alt="CareTrack Logo" style="width: 32px; height: 32px; border-radius: 8px;" class="me-2 shadow-sm">
+        <h5 class="mb-0 fw-bold">CareTrack Clinic</h5>
+      </div>
+
+      <nav>
+        <a href="dashboard.html" class="nav-item">
+          <i class="fa-solid fa-border-all"></i> Dashboard
+        </a>
+        <a href="my-patients.html" class="nav-item active">
+          <i class="fa-regular fa-user"></i> My Patients
+        </a>
+        <a href="diagnoses.html" class="nav-item">
+          <i class="fa-solid fa-file-medical"></i> Diagnoses
+        </a>
+        <a href="#" class="nav-item">
+          <i class="fa-regular fa-file-lines"></i> Reports
+        </a>
+      </nav>
+      
+      <div class="mt-auto">
+        <a href="#" id="logoutBtn" class="nav-item text-danger">
+          <i class="fa-solid fa-right-from-bracket"></i> Logout
+        </a>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      
+      <div class="header">
+        <div>
+          <h3 class="mb-1 fw-bold">My Patients</h3>
+          <p style="color: rgba(255,255,255,0.6);">Directory of your assigned patients</p>
+        </div>
+        <div class="header-controls">
+          <div class="icon-btn"><i class="fa-solid fa-search"></i></div>
+          <div class="user-avatar" id="user-avatar"></div>
+        </div>
+      </div>
+
+      <div class="row g-4" id="patientsContainer">
+        <!-- Loader -->
+        <div class="col-12 text-center py-5">
+          <div class="spinner-border text-info" role="status"></div>
+        </div>
+      </div>
+      
+    </main>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="../transitions.js"></script>
+  <script src="my-patients.js"></script>
+</body>
+</html>

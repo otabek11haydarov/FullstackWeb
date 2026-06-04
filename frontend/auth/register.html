@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CareTrack Clinic - Patient Registration</title>
+  
+  <!-- Theme Init (Must be first to prevent flash) -->
+  <script src="../theme-init.js"></script>
+  
+  <!-- Favicon -->
+  <link rel="icon" href="../assets/logo.png">
+  
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  
+  <!-- Global CSS -->
+  <link rel="stylesheet" href="../global.css">
+  
+  <style>
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow-x: hidden;
+      padding: 40px 0;
+    }
+    .register-container {
+      width: 100%;
+      max-width: 650px;
+      padding: 40px;
+      z-index: 1;
+    }
+    .logo-text {
+      background: var(--primary-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-weight: 700;
+      font-size: 28px;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body class="glass-body">
+
+  <!-- Floating Blobs -->
+  <div class="blob blob-primary" style="top: -5%; left: -5%;"></div>
+  <div class="blob blob-secondary" style="bottom: -5%; right: -5%;"></div>
+
+  <div class="register-container auth-card glass-card form-enter">
+    <div class="text-center">
+      <img src="../assets/logo.png" alt="CareTrack Logo" style="width: 60px; height: 60px; border-radius: 12px; margin-bottom: 10px;" class="shadow-sm">
+    </div>
+    <div class="logo-text">CareTrack Clinic</div>
+    <h4 class="text-center mb-4" style="color: var(--text-primary);">Patient Registration</h4>
+    
+    <div id="alert-box" class="alert alert-danger d-none" role="alert"></div>
+
+    <form id="registerForm">
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <label for="firstName" class="form-label" style="color: var(--text-muted);">First Name</label>
+          <input type="text" class="form-control" id="firstName" required>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label for="lastName" class="form-label" style="color: var(--text-muted);">Last Name</label>
+          <input type="text" class="form-control" id="lastName" required>
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <label for="email" class="form-label" style="color: var(--text-muted);">Email address</label>
+        <input type="email" class="form-control" id="email" required>
+      </div>
+
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <label for="password" class="form-label" style="color: var(--text-muted);">Password</label>
+          <input type="password" class="form-control" id="password" required>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label for="dateOfBirth" class="form-label" style="color: var(--text-muted);">Date of Birth</label>
+          <input type="date" class="form-control" id="dateOfBirth" required>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <label for="gender" class="form-label" style="color: var(--text-muted);">Gender</label>
+          <select class="form-select" id="gender" required>
+            <option value="" selected disabled>Choose...</option>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label for="contactNumber" class="form-label" style="color: var(--text-muted);">Contact Number</label>
+          <input type="text" class="form-control" id="contactNumber" required>
+        </div>
+      </div>
+
+      <div class="mb-4">
+        <label for="address" class="form-label" style="color: var(--text-muted);">Address</label>
+        <textarea class="form-control" id="address" rows="2" required></textarea>
+      </div>
+
+      <button type="submit" class="btn btn-primary-gradient w-100 py-2 fw-semibold fs-5 mb-3">Register</button>
+      <div class="text-center">
+        <span style="color: var(--text-muted);">Already have an account?</span> <a href="login.html" style="color: var(--primary-solid); text-decoration: none; font-weight: 500;">Login here</a>
+      </div>
+    </form>
+  </div>
+
+  <script>
+    document.getElementById('registerForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const payload = {
+        firstName: document.getElementById('firstName').value,
+        lastName: document.getElementById('lastName').value,
+        email: document.getElementById('email').value,
+        password: document.getElementById('password').value,
+        dateOfBirth: document.getElementById('dateOfBirth').value,
+        gender: document.getElementById('gender').value,
+        contactNumber: document.getElementById('contactNumber').value,
+        address: document.getElementById('address').value,
+        role: 'Patient'
+      };
+
+      const alertBox = document.getElementById('alert-box');
+      const btn = e.target.querySelector('button');
+      const originalText = btn.innerHTML;
+      btn.innerHTML = 'Registering...';
+      btn.disabled = true;
+
+      try {
+        const response = await fetch('http://localhost:8000/api/auth/register', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          localStorage.setItem('token', data.token);
+          localStorage.setItem('user', JSON.stringify(data.data.user));
+          window.location.href = '../patient/index.html';
+        } else {
+          alertBox.textContent = data.message || 'Registration failed';
+          alertBox.classList.remove('d-none');
+          btn.innerHTML = originalText;
+          btn.disabled = false;
+        }
+      } catch (err) {
+        console.error('Registration error:', err);
+        alertBox.textContent = 'An error occurred. Please try again later.';
+        alertBox.classList.remove('d-none');
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>

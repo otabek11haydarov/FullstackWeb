@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CareTrack Clinic - Admins Directory</title>
+  
+  <script src="../theme-init.js"></script>
+  
+  <link rel="icon" href="../assets/logo.png">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="../global.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="app-container">
+    
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header d-flex align-items-center">
+        <img src="../assets/logo.png" alt="CareTrack Logo" style="width: 32px; height: 32px; border-radius: 8px;" class="me-2 shadow-sm">
+        <h4 class="mb-0 fw-bold">CareTrack Clinic</h4>
+      </div>
+      
+      <ul class="nav flex-column sidebar-nav mt-4">
+        <li class="nav-item">
+          <a class="nav-link" href="index.html">
+            <i class="fa-solid fa-border-all"></i> Dashboard
+          </a>
+        </li>
+        <li class="nav-item" id="nav-admins-link">
+          <a class="nav-link active" href="admins.html">
+            <i class="fa-solid fa-user-shield"></i> Admins
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="doctors.html">
+            <i class="fa-solid fa-user-doctor"></i> Doctors
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="patients.html">
+            <i class="fa-solid fa-users"></i> Patients
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="receptionists.html">
+            <i class="fa-solid fa-desktop"></i> Receptionists
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="diagnoses.html">
+            <i class="fa-solid fa-stethoscope"></i> Diagnoses
+          </a>
+        </li>
+        <li class="nav-item mt-4">
+          <a class="nav-link" href="#" id="logoutBtn">
+            <i class="fa-solid fa-right-from-bracket text-danger"></i> <span class="text-danger">Logout</span>
+          </a>
+        </li>
+      </ul>
+
+      <div class="sidebar-footer mt-auto">
+        <div class="d-flex align-items-center">
+          <div class="avatar text-white rounded-circle d-flex align-items-center justify-content-center me-2" style="width: 40px; height: 40px; background: var(--primary-gradient);">
+            <span id="userInitial">U</span>
+          </div>
+          <div>
+            <div class="fw-bold fs-6 lh-1" id="userNameDisplay">User Name</div>
+            <small style="color: var(--text-muted);" id="userRoleDisplay">Role</small>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+      
+      <!-- Top Header -->
+      <header class="top-header d-flex justify-content-between align-items-center mb-4">
+        <div class="search-bar position-relative d-none d-md-block" style="width: 350px;">
+          <i class="fa-solid fa-search position-absolute top-50 start-0 translate-middle-y ms-3" style="color: var(--text-secondary);"></i>
+          <input type="text" class="form-control rounded-pill ps-5 border-0 search-input" placeholder="Search admins..." style="background-color: var(--bg-input); color: var(--text-primary);">
+        </div>
+
+        <div class="header-actions d-flex align-items-center gap-3">
+          <!-- Animated Theme Switcher -->
+          <div class="theme-switch-wrapper" onclick="toggleTheme()" title="Toggle Dark/Light Mode">
+            <div class="theme-switch">
+              <div class="theme-switch-toggle">
+                <i class="fa-solid fa-sun icon-sun"></i>
+                <i class="fa-solid fa-moon icon-moon"></i>
+              </div>
+            </div>
+          </div>
+          
+          <div class="position-relative cursor-pointer">
+            <i class="fa-regular fa-bell fs-5" style="color: var(--text-muted);"></i>
+          </div>
+        </div>
+      </header>
+
+      <!-- Content Header -->
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+          <h2 class="mb-0 fw-bold" style="color: var(--text-primary);">Admins Directory</h2>
+          <p style="color: var(--text-secondary);">Manage system administrators and super admins</p>
+        </div>
+        <button class="btn btn-primary-gradient rounded-pill px-4" onclick="openAddModal()">
+          Add New Admin <i class="fa-solid fa-plus ms-2"></i>
+        </button>
+      </div>
+
+      <div id="alertBox" class="alert d-none" role="alert"></div>
+
+      <!-- Glassmorphism Table -->
+      <div class="glass-table table-responsive">
+        <table class="table table-borderless align-middle mb-0">
+          <thead>
+            <tr>
+              <th>Admin</th>
+              <th>Email</th>
+              <th>Role</th>
+              <th>Joined Date</th>
+              <th class="text-end">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="adminsTableBody">
+            <!-- Rows dynamically injected here -->
+          </tbody>
+        </table>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- Toast Container -->
+  <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1055;"></div>
+
+  <!-- Custom Confirm Modal -->
+  <div class="modal fade" id="customConfirmModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+      <div class="modal-content glass-card border-0" style="color: var(--text-primary);">
+        <div class="modal-body text-center p-4">
+          <i class="fa-solid fa-triangle-exclamation text-warning fs-1 mb-3"></i>
+          <h5 class="fw-bold mb-3" id="confirmModalText">Are you sure?</h5>
+          <div class="d-flex justify-content-center gap-2 mt-4">
+            <button type="button" class="btn btn-outline-secondary rounded-pill px-4" data-bs-dismiss="modal">Cancel</button>
+            <button type="button" class="btn btn-danger rounded-pill px-4" id="confirmModalBtn" style="background: var(--primary-gradient); border: none;">Yes, Delete</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add/Edit Admin Modal -->
+  <div class="modal fade" id="adminModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content auth-card border-0 shadow-lg" style="color: var(--text-primary);">
+        <div class="modal-header border-bottom border-secondary border-opacity-25">
+          <h5 class="modal-title fw-bold" id="modalTitle">Add New Admin</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="filter: invert(1) grayscale(100%) brightness(200%);"></button>
+        </div>
+        <div class="modal-body">
+          <form id="adminForm">
+            <input type="hidden" id="adminId">
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="form-label" style="color: var(--text-secondary);">First Name</label>
+                <input type="text" class="form-control" id="firstName" required>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label" style="color: var(--text-secondary);">Last Name</label>
+                <input type="text" class="form-control" id="lastName" required>
+              </div>
+              <div class="col-12">
+                <label class="form-label" style="color: var(--text-secondary);">Email</label>
+                <input type="email" class="form-control" id="email" required>
+              </div>
+              <div class="col-12">
+                <label class="form-label" style="color: var(--text-secondary);">Password <small id="passwordHelp" class="text-muted"></small></label>
+                <input type="password" class="form-control" id="password">
+              </div>
+              <div class="col-12">
+                <label class="form-label" style="color: var(--text-secondary);">Role</label>
+                <select class="form-select" id="role" required>
+                  <option value="Admin">Admin</option>
+                  <option value="Super Admin">Super Admin</option>
+                </select>
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer border-top border-secondary border-opacity-25">
+          <button type="button" class="btn btn-outline-secondary rounded-pill" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-primary-gradient rounded-pill px-4" onclick="saveAdmin()">Save Admin</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="admins.js"></script>
+</body>
+</html>
