@@ -151,7 +151,9 @@ function renderSchedule(appointments, filter = 'upcoming') {
         const existingPills = cell.querySelectorAll('.pill').length;
         const topOffset = 50 + (existingPills * 15); // Shift down if overlapping
 
-        const pillHTML = `<div class="pill ${colorClass}" style="width: ${width}%; top: ${topOffset}%; transform: translateY(-50%);"></div>`;
+        const patientId = appt.Patient ? appt.Patient.id : (appt.patientId || '');
+        const hoverBoxShadow = isPurple ? 'rgba(123, 47, 247, 0.5)' : 'rgba(0, 245, 255, 0.5)';
+        const pillHTML = `<a href="patient-profile.html?id=${patientId}" class="pill ${colorClass}" style="width: ${width}%; top: ${topOffset}%; transform: translateY(-50%); display: block; cursor: pointer; transition: transform 0.2s; box-shadow: 0 0 10px ${hoverBoxShadow};" title="View Patient Profile" onmouseover="this.style.transform='translateY(-50%) scale(1.05)'" onmouseout="this.style.transform='translateY(-50%) scale(1)'"></a>`;
         cell.insertAdjacentHTML('beforeend', pillHTML);
       }
     }
@@ -164,7 +166,11 @@ function renderFeedback(feedbacks) {
   
   starsContainer.innerHTML = '';
   commentsContainer.innerHTML = '';
-  
+  if (!feedbacks || !Array.isArray(feedbacks)) {
+    starsContainer.innerHTML = '<div class="text-white-50 small">No feedback available.</div>';
+    return;
+  }
+
   feedbacks.forEach(fb => {
     // Generate Stars
     let starsHTML = '<div class="mb-3">';

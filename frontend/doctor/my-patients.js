@@ -67,24 +67,24 @@ function renderPatients(patients) {
 
     container.innerHTML += `
       <div class="col-md-6 col-lg-4">
-        <div class="patient-card">
+        <div class="glass-card p-4 rounded-4 h-100 d-flex flex-column border border-info border-opacity-25 bg-dark bg-opacity-50">
           <div class="d-flex align-items-center mb-3">
-            <div class="patient-avatar-lg me-3">${initial}</div>
+            <div class="patient-avatar-lg me-3 rounded-circle bg-primary bg-gradient d-flex justify-content-center align-items-center text-white fw-bold fs-4">${initial}</div>
             <div>
               <h5 class="mb-1 fw-bold text-white">${name}</h5>
-              <div class="text-white-50" style="font-size: 0.85rem;"><i class="fa-regular fa-calendar me-1"></i> DOB: ${new Date(patient.dateOfBirth).toLocaleDateString()}</div>
+              <div class="text-white-50 small"><i class="fa-regular fa-calendar me-1"></i> DOB: ${new Date(patient.dateOfBirth).toLocaleDateString()}</div>
             </div>
           </div>
           
           <div class="mb-4 flex-grow-1">
-            <h6 class="text-white-50" style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px;">Active Conditions</h6>
+            <h6 class="text-white-50 small text-uppercase tracking-wider">Active Conditions</h6>
             <div class="mt-2">
               ${diagnosesHtml}
             </div>
           </div>
           
           <div class="mt-auto">
-            <a href="patient-profile.html?id=${patient.id}" class="btn-neon-glow w-100">View Profile</a>
+            <a href="patient-profile.html?id=${patient.id}" class="btn btn-outline-info w-100 mt-3 text-decoration-none rounded-pill fw-bold">View Profile</a>
           </div>
         </div>
       </div>

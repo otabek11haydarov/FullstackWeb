@@ -10,7 +10,10 @@ router.use(authMiddleware.protect);
 
 router.get('/dashboard/stats', roleMiddleware.restrictTo('Doctor', 'Super Admin'), doctorController.getDashboard);
 router.get('/patients', roleMiddleware.restrictTo('Doctor', 'Super Admin'), doctorController.getMyPatients);
+router.get('/patients/:id/profile', roleMiddleware.restrictTo('Doctor', 'Super Admin'), doctorController.getPatientProfile);
 router.get('/diagnoses', roleMiddleware.restrictTo('Doctor', 'Super Admin'), doctorController.getDoctorDiagnoses);
+router.get('/appointments', roleMiddleware.restrictTo('Doctor', 'Super Admin'), doctorController.getDoctorAppointments);
+
 
 router
   .route('/')

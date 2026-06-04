@@ -142,49 +142,42 @@ exports.getDashboard = async (req, res) => {
 
     const today = new Date();
     today.setHours(0, 0, 0, 0);
+    const tomorrow = new Date(today.getTime() + 24 * 60 * 60 * 1000);
 
-    const [totalPatients, todayAppointments, recentFeedback] = await Promise.all([
-      Patient.count({ where: { doctorId: doctor.id } }),
-      Appointment.count({
-        where: {
-          doctorId: doctor.id,
-          date: {
-            $gte: today,
-            $lt: new Date(today.getTime() + 24 * 60 * 60 * 1000)
-          }
-        }
-      }),
-      // We don't have a feedback model yet, so we return a placeholder array
-      Promise.resolve([
-        { text: "Dr. Smith is wonderful and very patient.", rating: 5, date: "2023-10-25" },
-        { text: "Great experience, took the time to explain everything.", rating: 5, date: "2023-10-24" }
-      ])
-    ]);
-
-    // Format schedule for today
-    const weeklySchedule = await Appointment.findAll({
+    const totalAssignedPatients = await Patient.count({ where: { doctorId: doctor.id } });
+    
+    // Fallback to JS filtering if Op operators aren't set up perfectly
+    const allAppointments = await Appointment.findAll({
       where: { doctorId: doctor.id },
       include: [{ model: Patient, include: [User] }],
       order: [['date', 'ASC']]
     });
+    
+    const todayAppointments = allAppointments.filter(app => {
+      const d = new Date(app.date);
+      return d >= today && d < tomorrow;
+    });
 
-    const formattedSchedule = weeklySchedule.map(app => {
-      return {
-        id: app.id,
-        time: new Date(app.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        patientName: app.Patient && app.Patient.User ? `${app.Patient.User.firstName} ${app.Patient.User.lastName}` : 'Unknown',
-        type: app.reason || 'Checkup',
-        status: app.status || 'Scheduled'
-      };
+    const anonymousFeedback = [
+      { comment: "Dr. Smith is wonderful and very patient.", rating: 5, date: "2023-10-25" },
+      { comment: "Great experience, took the time to explain everything.", rating: 5, date: "2023-10-24" }
+    ];
+
+    const patientCards = await Patient.findAll({
+      where: { doctorId: doctor.id },
+      include: [User],
+      limit: 4
     });
 
     res.status(200).json({
       status: 'success',
       data: {
-        totalPatients,
-        todayAppointments,
-        recentFeedback,
-        weeklySchedule: formattedSchedule
+        totalAssignedPatients,
+        todayAppointments: todayAppointments.length,
+        anonymousFeedback,
+        patientCards,
+        upcomingAppointments: todayAppointments,
+        weeklySchedule: allAppointments
       }
     });
 
@@ -307,6 +300,79 @@ exports.getDoctorDiagnoses = async (req, res) => {
     res.status(200).json({
       status: 'success',
       data: { diagnoses }
+    });
+  } catch (err) {
+    res.status(400).json({ status: 'fail', message: err.message });
+  }
+};
+
+exports.getPatientProfile = async (req, res) => {
+  try {
+    const patientId = req.params.id;
+    const userId = req.user.id;
+    
+    // Allow Super Admin to view any patient, but if Doctor, must check ownership
+    let whereClause = { id: patientId };
+    if (req.user.role === 'Doctor') {
+      const doctor = await Doctor.findOne({ where: { userId } });
+      if (!doctor) {
+        return res.status(404).json({ status: 'fail', message: 'Doctor profile not found.' });
+      }
+      whereClause.doctorId = doctor.id;
+    }
+
+    const patient = await Patient.findOne({
+      where: whereClause,
+      include: [
+        { model: User, attributes: ['firstName', 'lastName', 'email'] },
+        { model: Diagnosis, attributes: ['id', 'condition', 'severity', 'prescription', 'createdAt'] },
+        { model: Appointment, attributes: ['id', 'date', 'status', 'reason', 'notes'] }
+      ],
+      order: [
+        [Diagnosis, 'createdAt', 'DESC'],
+        [Appointment, 'date', 'DESC']
+      ]
+    });
+
+    if (!patient) {
+      return res.status(404).json({ status: 'fail', message: 'Patient not found or not assigned to you.' });
+    }
+
+    res.status(200).json({
+      status: 'success',
+      data: { patient }
+    });
+  } catch (err) {
+    res.status(400).json({ status: 'fail', message: err.message });
+  }
+};
+
+exports.getDoctorAppointments = async (req, res) => {
+  try {
+    let whereClause = {};
+
+    if (req.user.role === 'Doctor') {
+      const doctor = await Doctor.findOne({ where: { userId: req.user.id } });
+      if (!doctor) {
+        return res.status(404).json({ status: 'fail', message: 'Doctor profile not found.' });
+      }
+      whereClause.doctorId = doctor.id;
+    }
+
+    const appointments = await Appointment.findAll({
+      where: whereClause,
+      include: [
+        { 
+          model: Patient, 
+          include: [{ model: User, attributes: ['firstName', 'lastName'] }] 
+        }
+      ],
+      order: [['date', 'ASC']]
+    });
+
+    res.status(200).json({
+      status: 'success',
+      data: { appointments }
     });
   } catch (err) {
     res.status(400).json({ status: 'fail', message: err.message });

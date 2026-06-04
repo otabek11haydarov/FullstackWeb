@@ -31,29 +31,14 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 async function fetchDoctorAndPatient() {
   try {
-    // 1. Get Doctor ID from user ID
-    const resDoc = await fetch(`${API_URL}/doctors`, {
+    const resPat = await fetch(`${API_URL}/doctor/patients/${patientId}/profile`, {
       headers: { 'Authorization': `Bearer ${token}` }
     });
-    const docData = await resDoc.json();
-    if (resDoc.ok && docData.data.doctors) {
-      const myDoctor = docData.data.doctors.find(d => d.userId === user.id);
-      if (myDoctor) {
-        doctorId = myDoctor.id;
-        
-        // 2. Get Patient History
-        const resPat = await fetch(`${API_URL}/doctors/${doctorId}/patients/${patientId}/history`, {
-          headers: { 'Authorization': `Bearer ${token}` }
-        });
-        const patData = await resPat.json();
-        if (resPat.ok) {
-          renderPatientProfile(patData.data.patient);
-        } else {
-          showToast(patData.message || 'Error loading patient', 'error');
-        }
-      } else {
-        showToast('Doctor profile not found for current user.', 'error');
-      }
+    const patData = await resPat.json();
+    if (resPat.ok) {
+      renderPatientProfile(patData.data.patient);
+    } else {
+      showToast(patData.message || 'Error loading patient', 'error');
     }
   } catch (err) {
     showToast('Failed to load data.', 'error');
