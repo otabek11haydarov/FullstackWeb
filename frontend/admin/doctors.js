@@ -63,34 +63,7 @@ function showConfirm(message, callback) {
   if (confirmModal) confirmModal.show();
 }
 
-function showToast(message, type = 'success') {
-  const container = document.querySelector('.toast-container');
-  if (!container) return;
-  
-  const icon = type === 'success' 
-    ? '<i class="fa-solid fa-circle-check toast-success-icon me-2"></i>' 
-    : '<i class="fa-solid fa-circle-exclamation toast-error-icon me-2"></i>';
-  
-  const toastHtml = `
-    <div class="toast glass-toast align-items-center border-0 mb-2" role="alert" aria-live="assertive" aria-atomic="true">
-      <div class="d-flex">
-        <div class="toast-body d-flex align-items-center fw-medium">
-          ${icon} ${message}
-        </div>
-        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-      </div>
-    </div>
-  `;
-  
-  container.insertAdjacentHTML('beforeend', toastHtml);
-  const toastEl = container.lastElementChild;
-  const toast = new bootstrap.Toast(toastEl, { delay: 3000 });
-  toast.show();
-  
-  toastEl.addEventListener('hidden.bs.toast', () => {
-    toastEl.remove();
-  });
-}
+
 
 async function fetchDoctors() {
   try {
@@ -102,10 +75,10 @@ async function fetchDoctors() {
       doctorsData = data.data.doctors;
       renderDoctors();
     } else {
-      showToast(data.message, 'danger');
+      showNotification(data.message, 'danger');
     }
   } catch (err) {
-    showToast('Error fetching doctors', 'danger');
+    showNotification('Error fetching doctors', 'danger');
   }
 }
 
@@ -184,7 +157,7 @@ async function saveDoctor() {
     const data = await res.json();
     if (res.ok) {
       doctorModal.hide();
-      showToast('Doctor updated successfully', 'success');
+      showNotification('Doctor updated successfully', 'success');
       
       const docIndex = doctorsData.findIndex(d => d.id === id);
       if (docIndex !== -1) {
@@ -200,10 +173,10 @@ async function saveDoctor() {
         }
       }
     } else {
-      showToast(data.message, 'danger');
+      showNotification(data.message, 'danger');
     }
   } catch (err) {
-    showToast('Error saving doctor', 'danger');
+    showNotification('Error saving doctor', 'danger');
   }
 }
 
@@ -216,7 +189,7 @@ async function deleteDoctor(id) {
       });
 
       if (res.ok || res.status === 204) {
-        showToast('Doctor removed', 'success');
+        showNotification('Doctor removed', 'success');
         
         const row = document.getElementById(`doctor-row-${id}`);
         if (row) row.remove();
@@ -224,10 +197,10 @@ async function deleteDoctor(id) {
         doctorsData = doctorsData.filter(d => d.id !== id);
       } else {
         const data = await res.json();
-        showToast(data.message, 'danger');
+        showNotification(data.message, 'danger');
       }
     } catch (err) {
-      showToast('Error deleting doctor', 'danger');
+      showNotification('Error deleting doctor', 'danger');
     }
   });
 }
@@ -243,7 +216,7 @@ async function createDoctor() {
   };
 
   if (!payload.firstName || !payload.lastName || !payload.email || !payload.password || !payload.specialization) {
-    showToast('Please fill all required fields.', 'danger');
+    showNotification('Please fill all required fields.', 'danger');
     return;
   }
 
@@ -260,7 +233,7 @@ async function createDoctor() {
     const data = await res.json();
     if (res.ok || res.status === 201) {
       addDoctorModalInstance.hide();
-      showToast('Successfully added!', 'success');
+      showNotification('Successfully added!', 'success');
       document.getElementById('addDoctorForm').reset();
       
       const newDoc = data.data.doctor;
@@ -290,10 +263,10 @@ async function createDoctor() {
       `;
       tbody.prepend(tr); // Add to the top of the table
     } else {
-      showToast(data.message || 'Error adding doctor', 'danger');
+      showNotification(data.message || 'Error adding doctor', 'danger');
     }
   } catch (err) {
-    showToast('Network error while adding doctor', 'danger');
+    showNotification('Network error while adding doctor', 'danger');
   }
 }
 
@@ -340,7 +313,7 @@ async function updateDoctor() {
     const data = await res.json();
     if (res.ok || res.status === 200) {
       editDoctorModalInstance.hide();
-      showToast('Updated successfully', 'success');
+      showNotification('Updated successfully', 'success');
 
       // Update local data
       const updatedDoc = data.data.doctor;
@@ -368,9 +341,9 @@ async function updateDoctor() {
         tr.querySelector('.avatar').textContent = updatedDoc.User.firstName.charAt(0);
       }
     } else {
-      showToast(data.message || 'Error updating doctor', 'danger');
+      showNotification(data.message || 'Error updating doctor', 'danger');
     }
   } catch (err) {
-    showToast('Network error while updating doctor', 'danger');
+    showNotification('Network error while updating doctor', 'danger');
   }
 }

@@ -17,13 +17,10 @@ document.addEventListener('DOMContentLoaded', () => {
   const userRoleDisplay = document.getElementById('userRoleDisplay');
   
   if (userInitial && user.firstName) {
-    userInitial.textContent = user.firstName.charAt(0).toUpperCase();
   }
   if (userNameDisplay) {
-    userNameDisplay.textContent = `${user.firstName} ${user.lastName}`;
   }
   if (userRoleDisplay) {
-    userRoleDisplay.textContent = user.role;
   }
 
   // Logout Logic
@@ -213,11 +210,11 @@ async function handleFormSubmit(e) {
       loadAppointments(); // Instantly refresh
     } else {
       const errorData = await res.json();
-      alert("Error: " + errorData.message);
+      showNotification("Error: " + errorData.message);
     }
   } catch (err) {
     console.error("Failed to submit appointment:", err);
-    alert("System error saving appointment.");
+    showNotification("System error saving appointment.");
   }
 }
 
@@ -235,7 +232,7 @@ window.deleteAppointment = async function(id) {
       loadAppointments(); // Instantly refresh
     } else {
       const errorData = await res.json();
-      alert("Error deleting: " + errorData.message);
+      showNotification("Error deleting: " + errorData.message);
     }
   } catch (err) {
     console.error("Failed to delete appointment:", err);

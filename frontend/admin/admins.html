@@ -1,6 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
+<!DOCTYPE html><html lang="en"><head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>CareTrack Clinic - Admins Directory</title>
@@ -12,6 +10,11 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="../global.css">
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+
+  <script src="https://unpkg.com/@popperjs/core@2"></script>
+  <script src="https://unpkg.com/tippy.js@6"></script>
+  <link rel="stylesheet" href="https://unpkg.com/tippy.js@6/animations/scale-subtle.css">
 </head>
 <body>
 
@@ -68,15 +71,7 @@
       </ul>
 
       <div class="sidebar-footer mt-auto">
-        <div class="d-flex align-items-center">
-          <div class="avatar text-white rounded-circle d-flex align-items-center justify-content-center me-2" style="width: 40px; height: 40px; background: var(--primary-gradient);">
-            <span id="userInitial">U</span>
-          </div>
-          <div>
-            <div class="fw-bold fs-6 lh-1" id="userNameDisplay">User Name</div>
-            <small style="color: var(--text-muted);" id="userRoleDisplay">Role</small>
-          </div>
-        </div>
+        <div class="userProfileTarget"></div>
       </div>
     </aside>
 
@@ -91,16 +86,6 @@
         </div>
 
         <div class="header-actions d-flex align-items-center gap-3">
-          <!-- Animated Theme Switcher -->
-          <div class="theme-switch-wrapper" onclick="toggleTheme()" title="Toggle Dark/Light Mode">
-            <div class="theme-switch">
-              <div class="theme-switch-toggle">
-                <i class="fa-solid fa-sun icon-sun"></i>
-                <i class="fa-solid fa-moon icon-moon"></i>
-              </div>
-            </div>
-          </div>
-          
           <a href="my-profile.html" class="text-light text-decoration-none d-flex align-items-center gap-2 custom-hover-effect">
             <div class="rounded-circle d-flex justify-content-center align-items-center" style="width: 40px; height: 40px; background: linear-gradient(135deg, var(--neon-purple), var(--neon-cyan));">
               <i class="fas fa-user text-white"></i>
@@ -144,7 +129,7 @@
   </div>
 
   <!-- Toast Container -->
-  <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1055;"></div>
+  
 
   <!-- Custom Confirm Modal -->
   <div class="modal fade" id="customConfirmModal" tabindex="-1" aria-hidden="true">
@@ -176,15 +161,15 @@
             <div class="row g-3">
               <div class="col-md-6">
                 <label class="form-label" style="color: var(--text-secondary);">First Name</label>
-                <input type="text" class="form-control" id="firstName" required>
+                <input type="text" class="form-control" id="firstName" required="">
               </div>
               <div class="col-md-6">
                 <label class="form-label" style="color: var(--text-secondary);">Last Name</label>
-                <input type="text" class="form-control" id="lastName" required>
+                <input type="text" class="form-control" id="lastName" required="">
               </div>
               <div class="col-12">
                 <label class="form-label" style="color: var(--text-secondary);">Email</label>
-                <input type="email" class="form-control" id="email" required>
+                <input type="email" class="form-control" id="email" required="">
               </div>
               <div class="col-12">
                 <label class="form-label" style="color: var(--text-secondary);">Password <small id="passwordHelp" class="text-muted"></small></label>
@@ -192,7 +177,7 @@
               </div>
               <div class="col-12">
                 <label class="form-label" style="color: var(--text-secondary);">Role</label>
-                <select class="form-select" id="role" required>
+                <select class="form-select" id="role" required="">
                   <option value="Admin">Admin</option>
                   <option value="Super Admin">Super Admin</option>
                 </select>
@@ -210,5 +195,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
   <script src="admins.js"></script>
-</body>
-</html>
+  <script src="../transitions.js"></script>
+
+
+</body></html>

@@ -22,10 +22,7 @@ exports.updateProfile = async (req, res) => {
       updates.lastName = req.body.lastName;
     }
 
-    // Hash and update password if provided
-    if (req.body.password) {
-      updates.password = await bcrypt.hash(req.body.password, 10);
-    }
+
 
     // Handle avatar upload if provided (mock logic for now)
     if (req.body.avatar) {

@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const urlParams = new URLSearchParams(window.location.search);
   doctorId = urlParams.get('id');
   if (!doctorId) {
-    alert('No doctor selected.');
+    showNotification('No doctor selected.');
     window.location.href = 'doctors.html';
     return;
   }
@@ -32,7 +32,7 @@ async function fetchDoctorProfile() {
       renderPatients(data.data.patients);
       renderWorkSchedule(data.data.appointments);
     } else {
-      alert(data.message || 'Error loading profile');
+      showNotification(data.message || 'Error loading profile');
     }
   } catch (err) {
     console.error('Failed to fetch profile', err);

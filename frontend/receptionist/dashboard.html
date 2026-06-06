@@ -1,0 +1,231 @@
+<!DOCTYPE html><html lang="en"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Receptionist Dashboard - Medical System</title>
+  
+  <script src="../theme-init.js"></script>
+  
+  <!-- Custom Logo Favicon -->
+  <link rel="icon" href="../assets/logo.png">
+  
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="../global.css">
+  
+  <style>
+    /* Custom Styling for the Receptionist Dashboard */
+    .locked-action {
+      opacity: 0.5;
+      cursor: not-allowed;
+      filter: grayscale(80%);
+      pointer-events: none;
+    }
+    
+    .timeline-item {
+      position: relative;
+      padding-left: 35px;
+      margin-bottom: 20px;
+    }
+    .timeline-item::before {
+      content: '';
+      position: absolute;
+      left: 15px;
+      top: 0;
+      bottom: -20px;
+      width: 2px;
+      background: rgba(255, 255, 255, 0.1);
+    }
+    .timeline-item:last-child::before {
+      display: none;
+    }
+    .timeline-icon {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg-card);
+      border: 2px solid var(--primary-color);
+      z-index: 1;
+    }
+    
+    .quick-action-btn {
+      transition: all 0.3s ease;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 1.5rem 1rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .quick-action-btn:hover:not(.locked-action) {
+      background: rgba(255, 255, 255, 0.1);
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+    .lock-overlay {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      color: var(--neon-cyan);
+    }
+    .active-gradient-sidebar { background: linear-gradient(90deg, #7b2ff7, #ff007f) !important; color: white !important; }
+    .hover-glass:hover { background: rgba(255,255,255,0.05); color: white !important; }
+  </style>
+  <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+
+  <script src="https://unpkg.com/@popperjs/core@2"></script>
+  <script src="https://unpkg.com/tippy.js@6"></script>
+  <link rel="stylesheet" href="https://unpkg.com/tippy.js@6/animations/scale-subtle.css">
+</head>
+<body class="glass-body">
+
+  <div class="d-flex" style="height: 100vh; overflow: hidden; background-color: var(--bg-dark);">
+    
+    <!-- Sidebar -->
+    <nav class="glass-card d-flex flex-column p-3 m-3 rounded-4" style="width: 280px; height: calc(100vh - 48px);">
+        <!-- Logo & Brand Name -->
+        <div class="brand-logo mb-4 d-flex align-items-center gap-3 ps-2">
+            <img src="../assets/logo.png" alt="Logo" width="40" class="rounded">
+            <div class="d-flex flex-column">
+                <span class="fw-bold text-light">CareTrack</span>
+                <span class="small text-white-50">Clinic</span>
+            </div>
+        </div>
+        
+        <!-- Navigation -->
+        <ul class="nav flex-column mb-auto gap-2">
+            <li class="nav-item">
+                <a href="dashboard.html" class="nav-link text-white active-gradient-sidebar rounded-3 d-flex align-items-center gap-3">
+                    <i class="fas fa-th-large"></i> Dashboard
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="appointments.html" class="nav-link text-secondary rounded-3 d-flex align-items-center gap-3 hover-glass">
+                    <i class="fas fa-calendar-check"></i> Appointments
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="doctors.html" class="nav-link text-secondary rounded-3 d-flex align-items-center gap-3 hover-glass">
+                    <i class="fas fa-user-md"></i> Doctors
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="patients.html" class="nav-link text-secondary rounded-3 d-flex align-items-center gap-3 hover-glass">
+                    <i class="fas fa-users"></i> Patients
+                </a>
+            </li>
+        </ul>
+
+        <!-- Logout -->
+        <div class="mt-auto border-top border-secondary pt-3">
+            <a href="../auth/login.html" id="logoutBtn" class="nav-link text-danger fw-bold d-flex align-items-center gap-3">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </a>
+        </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="flex-grow-1 d-flex flex-column p-3 m-3 ms-0" style="overflow-y: auto;">
+      
+      <!-- Top Header -->
+      <header class="d-flex justify-content-between align-items-center mb-4 glass-card p-3 rounded-4">
+        <h2 class="mb-0 fw-bold" style="color: var(--text-primary);">Dashboard</h2>
+        
+        <div class="header-actions d-flex align-items-center gap-3">
+          <!-- CRITICAL CHANGE: Profile Area with Full Name -->
+          <div class="userProfileTarget"></div>
+        </div>
+      </header>
+
+      <!-- Read-Only Banner (Hidden by default) -->
+      <div id="shiftWarningBanner" class="alert alert-danger bg-danger bg-opacity-10 border-danger text-danger text-center glass-card fw-bold d-none mb-4 shadow-sm" style="box-shadow: 0 0 20px rgba(220, 53, 69, 0.2) !important;">
+        <i class="fa-solid fa-lock me-2"></i> You are currently outside your active shift. The system is in READ-ONLY mode.
+      </div>
+
+      <!-- Main Dashboard Grid -->
+      <div class="row g-4">
+        
+        <!-- Left Column: Global Recent Activities -->
+        <div class="col-lg-5">
+          <div class="glass-card p-4 h-100">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+              <h5 class="fw-bold text-light mb-0">Global Recent Activities</h5>
+              <button class="btn btn-sm text-muted border-0"><i class="fa-solid fa-ellipsis"></i></button>
+            </div>
+            
+            <div class="timeline-container mt-4" id="recent-activity-container">
+              <p class="text-muted">No recent activity.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Column: Schedule & Quick Actions -->
+        <div class="col-lg-7 d-flex flex-column gap-4">
+          
+          <!-- Top Right: Upcoming Appointments -->
+          <div class="glass-card p-4">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+              <h5 class="fw-bold text-light mb-0">Upcoming Appointments (Next 5 Hours)</h5>
+              <button class="btn btn-sm text-muted border-0"><i class="fa-solid fa-ellipsis"></i></button>
+            </div>
+            
+            <div id="upcomingAppointmentsList" class="mt-4 pt-3 position-relative d-flex flex-column gap-3">
+              <!-- Dynamically populated by JS -->
+              <div class="text-center text-secondary py-3">
+                <div class="spinner-border text-info spinner-border-sm mb-2" role="status"></div>
+                <p class="small mb-0">Loading appointments...</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bottom Right: Quick Actions Grid -->
+          <div class="glass-card p-4 flex-grow-1">
+            <h5 class="fw-bold text-light mb-4">Quick Actions</h5>
+            
+            <div class="row g-3">
+              <div class="col-12">
+                <button class="btn w-100 quick-action-btn text-light fw-semibold fs-5 text-center action-button" onclick="window.location.href='appointments.html'">
+                  <i class="fas fa-lock lock-overlay d-none"></i>
+                  Add Appointment
+                </button>
+              </div>
+              <div class="col-sm-6">
+                <button class="btn w-100 quick-action-btn text-light fw-semibold text-center action-button" onclick="window.location.href='doctors.html'">
+                  <i class="fas fa-lock lock-overlay d-none"></i>
+                  Search Doctor
+                </button>
+              </div>
+              <div class="col-sm-6">
+                <button class="btn w-100 quick-action-btn text-light fw-semibold text-center action-button" onclick="window.location.href='patients.html'">
+                  <i class="fas fa-lock lock-overlay d-none"></i>
+                  Register Patient
+                </button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+        
+      </div>
+      
+    </main>
+  </div>
+
+  <!-- Socket.io -->
+  <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+  <!-- Anime.js for quick animations -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Bootstrap Bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="receptionist-dashboard.js"></script>
+  <script src="../transitions.js"></script>
+
+
+</body></html>

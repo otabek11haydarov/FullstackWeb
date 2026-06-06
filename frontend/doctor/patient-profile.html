@@ -1,6 +1,4 @@
-<!DOCTYPE html>
-<html lang="en" data-theme="dark">
-<head>
+<!DOCTYPE html><html lang="en" data-theme="dark"><head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>CareTrack Clinic - Patient Profile</title>
@@ -14,6 +12,11 @@
   
   
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+
+  <script src="https://unpkg.com/@popperjs/core@2"></script>
+  <script src="https://unpkg.com/tippy.js@6"></script>
+  <link rel="stylesheet" href="https://unpkg.com/tippy.js@6/animations/scale-subtle.css">
 </head>
 <body class="text-white min-vh-100">
 
@@ -67,6 +70,27 @@
         <!-- Patient Info -->
         <div class="col-md-4">
           <div class="glass-panel text-center h-100">
+     <!-- Main Header -->
+    <header class="d-flex justify-content-between align-items-center mb-5">
+      <div>
+        <h2 class="fw-bold mb-1"><i class="fa-solid fa-hospital-user text-neon-cyan me-2"></i>Patient Profile</h2>
+        <p class="text-white-50 mb-0">Detailed view of patient records</p>
+      </div>
+      <div class="d-flex align-items-center gap-3">
+        <button id="btnDownloadPDF" class="btn btn-outline-danger shadow-sm fw-medium">
+          <i class="fas fa-file-pdf me-2"></i>Download Medical History
+        </button>
+        <div class="d-flex align-items-center bg-dark rounded-pill px-3 py-2 border border-secondary shadow-sm">
+          <div class="avatar text-white rounded-circle d-flex align-items-center justify-content-center me-2" style="width: 35px; height: 35px; background: var(--primary-gradient);">
+            <span id="headerInitial">D</span>
+          </div>
+          <div>
+            <div class="fw-bold lh-1" style="font-size: 0.9rem;" id="headerName">Doctor</div>
+            <small class="text-white-50" style="font-size: 0.75rem;">Doctor</small>
+          </div>
+        </div>
+      </div>
+    </header>
             <div class="avatar-lg mx-auto mb-3" id="patAvatar">P</div>
             <h4 class="fw-bold" id="patName">Loading...</h4>
             <p class="text-white-50" id="patEmail">...</p>
@@ -90,28 +114,92 @@
         <div class="col-md-8">
           <div class="glass-panel h-100">
             <h5 class="fw-bold mb-4">Medical Actions</h5>
-            
-            <form id="diagnosisForm">
-              <div class="mb-3">
-                <label class="form-label text-white-50">New Diagnosis</label>
-                <input type="text" class="form-control" id="diagCondition" placeholder="e.g. Hypertension">
+
+            <!-- Bootstrap Tabs Navigation -->
+            <ul class="nav nav-tabs mb-4 border-secondary" id="medicalActionsTabs" role="tablist">
+              <li class="nav-item" role="presentation">
+                <button class="nav-link active bg-transparent text-light border-secondary border-bottom-0" id="diagnosis-tab" data-bs-toggle="tab" data-bs-target="#diagnosis-pane" type="button" role="tab">New Diagnosis</button>
+              </li>
+              <li class="nav-item" role="presentation">
+                <button class="nav-link bg-transparent text-white-50 border-0" id="actions-tab" data-bs-toggle="tab" data-bs-target="#actions-pane" type="button" role="tab">Appointment Actions</button>
+              </li>
+              <li class="nav-item" role="presentation">
+                <button class="nav-link bg-transparent text-white-50 border-0" id="refer-tab" data-bs-toggle="tab" data-bs-target="#refer-pane" type="button" role="tab">Refer Patient</button>
+              </li>
+            </ul>
+
+            <!-- Tabs Content -->
+            <div class="tab-content" id="medicalActionsTabsContent">
+              
+              <!-- Tab 1: Diagnosis -->
+              <div class="tab-pane fade show active" id="diagnosis-pane" role="tabpanel">
+                <form id="diagnosisForm">
+                  <input type="hidden" id="diagnosisPatientId" value="">
+                  <div class="mb-3">
+                    <label class="form-label text-white-50">Condition</label>
+                    <input type="text" class="form-control" id="diagCondition" placeholder="e.g. Hypertension">
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label text-white-50">Severity</label>
+                    <select class="form-select" id="diagSeverity">
+                      <option value="Mild">Mild</option>
+                      <option value="Moderate">Moderate</option>
+                      <option value="Critical">Critical</option>
+                    </select>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label text-white-50">Notes / Treatment Plan</label>
+                    <textarea class="form-control" id="diagNotes" rows="3" placeholder="Enter notes here..."></textarea>
+                  </div>
+                  <button type="submit" class="btn btn-neon-cyan w-100" id="btnSubmitDiag">Add Diagnosis</button>
+                </form>
               </div>
-              <div class="mb-3">
-                <label class="form-label text-white-50">Severity</label>
-                <select class="form-select" id="diagSeverity">
-                  <option value="Low">Low</option>
-                  <option value="Medium">Medium</option>
-                  <option value="High">High</option>
-                  <option value="Critical">Critical</option>
-                </select>
+
+              <!-- Tab 2: Appointment Actions -->
+              <div class="tab-pane fade" id="actions-pane" role="tabpanel">
+                <p class="text-white-50 mb-4">Manage the current appointment status for this patient.</p>
+                <div class="d-grid gap-3">
+                  <button class="btn btn-outline-success border-2 fw-medium" id="btnMarkCompleted">
+                    <i class="fa-solid fa-check-circle me-2"></i>Mark as Completed
+                  </button>
+                  <button class="btn btn-outline-warning border-2 fw-medium" id="btnSendToDiagnostics">
+                    <i class="fa-solid fa-clock-rotate-left me-2"></i>Send to Diagnostics (Reschedule +2h)
+                  </button>
+                </div>
               </div>
-              <div class="mb-3">
-                <label class="form-label text-white-50">Notes / Treatment Plan</label>
-                <textarea class="form-control" id="diagNotes" rows="3" placeholder="Enter notes here..."></textarea>
+
+              <!-- Tab 3: Refer Patient -->
+              <div class="tab-pane fade" id="refer-pane" role="tabpanel">
+                <form id="referralForm">
+                  <div class="mb-3">
+                    <label class="form-label text-white-50">Select Doctor to Refer To</label>
+                    <select class="form-select" id="referDoctorSelect" required="">
+                      <option value="" disabled="" selected="">Loading doctors...</option>
+                    </select>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label text-white-50">Reason for Referral</label>
+                    <textarea class="form-control" id="referReason" rows="3" placeholder="Explain why you are transferring this patient..." required=""></textarea>
+                  </div>
+                  <button type="submit" class="btn btn-danger w-100">
+                    <i class="fa-solid fa-arrow-right-arrow-left me-2"></i>Transfer Patient
+                  </button>
+                </form>
               </div>
-              <button type="submit" class="btn btn-neon-cyan" id="btnSubmitDiag">Add Diagnosis</button>
-            </form>
-            
+
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Past Clinical History -->
+      <div class="row mt-4">
+        <div class="col-12">
+          <div class="glass-panel">
+            <h5 class="fw-bold mb-4"><i class="fas fa-history text-neon-cyan me-2"></i>Past Clinical History</h5>
+            <div id="clinicalHistoryContainer">
+              <p class="text-white-50">Loading history...</p>
+            </div>
           </div>
         </div>
       </div>
@@ -120,10 +208,23 @@
   </div>
 
   <!-- Toast Container -->
-  <div class="toast-container position-fixed top-0 end-0 p-3"></div>
+  
+
+  <!-- Hidden Container for PDF Rendering -->
+  <div id="pdfContent" style="display: none; background: white; color: black; padding: 40px; font-family: 'Helvetica', 'Arial', sans-serif;">
+    <div style="text-align: center; border-bottom: 2px solid #333; padding-bottom: 20px; margin-bottom: 30px;">
+      <h1 style="margin: 0; color: #333;">CareTrack Clinic</h1>
+      <p style="margin: 5px 0 0; color: #666; font-size: 14px;">Official Medical History Report</p>
+    </div>
+    <div id="pdfPatientInfo" style="margin-bottom: 30px; font-size: 14px;"></div>
+    <h3 style="color: #333; border-bottom: 1px solid #ccc; padding-bottom: 10px;">Clinical Ledger</h3>
+    <div id="pdfLedgerList"></div>
+  </div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <script src="../transitions.js"></script>
   <script src="patient-profile.js"></script>
-</body>
-</html>
+
+
+</body></html>

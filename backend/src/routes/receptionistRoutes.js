@@ -13,6 +13,20 @@ router
   .get(receptionistController.getAllReceptionists)
   .post(roleMiddleware.restrictTo('Super Admin', 'Admin'), receptionistController.createReceptionist);
 
+router.put('/profile', roleMiddleware.restrictTo('Receptionist'), receptionistController.updateProfile);
+
+router.get('/doctors', receptionistController.getReceptionistDoctors);
+
+router
+  .route('/patients')
+  .get(receptionistController.getAllPatients)
+  .post(receptionistController.createPatient);
+
+router
+  .route('/patients/:id')
+  .put(receptionistController.updatePatient)
+  .delete(receptionistController.deletePatient);
+
 router
   .route('/:id')
   .get(receptionistController.getReceptionist)

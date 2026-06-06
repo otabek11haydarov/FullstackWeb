@@ -10,7 +10,7 @@ const user = JSON.parse(userStr);
 
 // Security Check
 if (user.role !== 'Doctor' && user.role !== 'Super_Admin') {
-  alert('Access Denied. You must be a Doctor to view this page.');
+  showNotification('Access Denied. You must be a Doctor to view this page.');
   window.location.href = '../auth/login.html';
 }
 
@@ -56,7 +56,6 @@ document.addEventListener('DOMContentLoaded', () => {
   // Populate User Avatar
   const avatar = document.querySelector('.user-avatar');
   if (avatar && user.firstName) {
-    avatar.textContent = user.firstName.charAt(0).toUpperCase();
     avatar.style.display = 'flex';
     avatar.style.alignItems = 'center';
     avatar.style.justifyContent = 'center';
@@ -71,7 +70,7 @@ document.addEventListener('DOMContentLoaded', () => {
     localStorage.removeItem('user');
     window.location.href = '../auth/login.html';
   });
-
+  initCalendar();
   fetchDashboardData();
 });
 
@@ -110,13 +109,37 @@ async function fetchDashboardData() {
   }
 }
 
-function renderSchedule(appointments, filter = 'upcoming') {
-  // First clear all existing pills in case of re-render
-  document.querySelectorAll('.schedule-cell').forEach(cell => {
-    cell.innerHTML = '';
-  });
+let calendar;
 
-  if (!appointments || appointments.length === 0) return;
+function initCalendar() {
+  const calendarEl = document.getElementById('calendar');
+  if (!calendarEl) return;
+  
+  calendar = new FullCalendar.Calendar(calendarEl, {
+    initialView: 'timeGridWeek',
+    weekends: false,
+    slotDuration: '00:30:00',
+    slotMinTime: '08:00:00',
+    slotMaxTime: '19:00:00',
+    headerToolbar: false,
+    allDaySlot: false,
+    events: [],
+    eventClick: function(info) {
+      if (info.event.extendedProps.patientId) {
+        window.location.href = `patient-profile.html?id=${info.event.extendedProps.patientId}`;
+      }
+    }
+  });
+  calendar.render();
+}
+
+function renderSchedule(appointments, filter = 'upcoming') {
+  if (!calendar) return;
+
+  if (!appointments || appointments.length === 0) {
+    calendar.removeAllEvents();
+    return;
+  }
 
   const filteredAppointments = appointments.filter(appt => {
     const status = (appt.status || '').toLowerCase();
@@ -130,31 +153,33 @@ function renderSchedule(appointments, filter = 'upcoming') {
     return true;
   });
 
-  const daysMap = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-
-  filteredAppointments.forEach(appt => {
-    console.log("Appointment Data:", appt);
-    const d = new Date(appt.date);
-    const dayName = daysMap[d.getDay()]; // e.g. 'Mon'
-    const hourStr = d.getHours().toString().padStart(2, '0') + ':00'; // e.g. '09:00'
-
-    // Find the exact matching cell in the DOM
-    const cell = document.querySelector(`.schedule-cell[data-day="${dayName}"][data-time="${hourStr}"]`);
+  const events = filteredAppointments.map(appt => {
+    const status = (appt.status || '').toLowerCase();
+    let color = 'var(--neon-cyan)';
     
-    if (cell) {
-      // Decide pill color dynamically
-      const isPurple = appt.reason && appt.reason.toLowerCase().includes('consultation');
-      const colorClass = isPurple ? 'purple' : 'cyan';
-      const width = Math.floor(Math.random() * 40 + 40); // Random width 40-80% for visual variety
-      
-      const existingPills = cell.querySelectorAll('.pill').length;
+    // Status colors
+    if (status === 'completed') color = 'var(--success)';
+    else if (status === 'cancelled' || status === 'rejected') color = 'var(--danger)';
+    else if (appt.reason && appt.reason.toLowerCase().includes('consultation')) color = 'var(--neon-purple)';
 
-      const correctPatientId = appt.Patient?.id || appt.patientId;
-      const hoverBoxShadow = isPurple ? 'rgba(123, 47, 247, 0.5)' : 'rgba(0, 245, 255, 0.5)';
-      const pillHTML = `<a href="patient-profile.html?id=${correctPatientId}" class="pill ${colorClass} mb-2 d-block" style="width: ${width}%; cursor: pointer; transition: transform 0.2s; box-shadow: 0 0 10px ${hoverBoxShadow};" title="View Patient Profile" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'"></a>`;
-      cell.insertAdjacentHTML('beforeend', pillHTML);
-    }
+    const startDate = new Date(appt.date);
+    const endDate = new Date(startDate.getTime() + 60 * 60 * 1000); // Default to 1 hour
+    
+    const correctPatientId = appt.Patient?.id || appt.patientId;
+    const patName = appt.Patient ? `${appt.Patient.User.firstName} ${appt.Patient.User.lastName}` : 'Appointment';
+
+    return {
+      id: appt.id,
+      title: patName,
+      start: startDate,
+      end: endDate,
+      backgroundColor: color,
+      extendedProps: { patientId: correctPatientId }
+    };
   });
+
+  calendar.removeAllEvents();
+  calendar.addEventSource(events);
 }
 
 function renderFeedback(feedbacks) {
@@ -297,3 +322,20 @@ window.checkPatientEditAccess = function(appointmentDateString) {
   
   return isEditable;
 };
+
+// ==========================================
+// REAL-TIME AUDIT FEED & SYNC
+// ==========================================
+if (typeof io !== 'undefined') {
+  const socket = io('http://localhost:8000');
+  
+  // Listen for global activity to auto-refresh the dashboard/calendar
+  socket.on('globalActivity', (activity) => {
+    console.log('Real-Time Update Received:', activity);
+    // Refresh schedule quietly without full page reload
+    if (typeof fetchDashboardData === 'function') {
+      fetchDashboardData();
+    }
+  });
+}
+

@@ -1,4 +1,4 @@
-const { Patient, User, Doctor, Disease } = require('../models');
+const { Patient, User, Doctor, Disease, Activity } = require('../models');
 const bcrypt = require('bcryptjs');
 
 exports.getAllPatients = async (req, res) => {
@@ -38,7 +38,7 @@ exports.getAllPatients = async (req, res) => {
 
 exports.createPatient = async (req, res) => {
   try {
-    const { firstName, lastName, email, password, gender, age, doctorId } = req.body;
+    const { firstName, lastName, email, password, gender, age, doctorId, bloodType, allergies, chronicConditions, medicalHistory } = req.body;
 
     // Check if user already exists
     const existingUser = await User.findOne({ where: { email } });
@@ -67,6 +67,10 @@ exports.createPatient = async (req, res) => {
     const patient = await Patient.create({
       dateOfBirth,
       gender: gender || 'Other',
+      bloodType,
+      allergies,
+      chronicConditions,
+      medicalHistory,
       doctorId: doctorId || null,
       userId: user.id
     });
@@ -78,6 +82,18 @@ exports.createPatient = async (req, res) => {
         { model: Doctor, include: [User] }
       ]
     });
+
+    const io = req.app.get('io');
+    if (io) {
+      const msg = `Admin registered patient: ${newPatient.User.firstName} ${newPatient.User.lastName}`;
+      const activity = await Activity.create({ message: msg, userInitial: 'A' });
+      io.emit('newActivity', {
+        id: activity.id,
+        message: msg,
+        timestamp: activity.createdAt,
+        userInitial: 'A'
+      });
+    }
 
     res.status(201).json({
       status: 'success',
@@ -126,7 +142,7 @@ exports.updatePatient = async (req, res) => {
       return res.status(404).json({ status: 'fail', message: 'No patient found with that ID' });
     }
 
-    const { firstName, lastName, email, password, gender, age, doctorId } = req.body;
+    const { firstName, lastName, email, password, gender, age, doctorId, bloodType, allergies, chronicConditions, medicalHistory } = req.body;
 
     // Update User details
     const userUpdates = {};
@@ -147,6 +163,10 @@ exports.updatePatient = async (req, res) => {
     const patUpdates = {};
     if (gender) patUpdates.gender = gender;
     if (doctorId !== undefined) patUpdates.doctorId = doctorId || null;
+    if (bloodType !== undefined) patUpdates.bloodType = bloodType;
+    if (allergies !== undefined) patUpdates.allergies = allergies;
+    if (chronicConditions !== undefined) patUpdates.chronicConditions = chronicConditions;
+    if (medicalHistory !== undefined) patUpdates.medicalHistory = medicalHistory;
     
     if (age) {
       const dateOfBirth = new Date();
@@ -156,6 +176,18 @@ exports.updatePatient = async (req, res) => {
 
     if (Object.keys(patUpdates).length > 0) {
       await patient.update(patUpdates);
+    }
+
+    const io = req.app.get('io');
+    if (io) {
+      const msg = `Admin updated patient: ${patient.User.firstName} ${patient.User.lastName}`;
+      const activity = await Activity.create({ message: msg, userInitial: 'A' });
+      io.emit('newActivity', {
+        id: activity.id,
+        message: msg,
+        timestamp: activity.createdAt,
+        userInitial: 'A'
+      });
     }
 
     res.status(200).json({

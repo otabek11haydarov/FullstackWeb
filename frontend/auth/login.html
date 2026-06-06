@@ -1,6 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
+<!DOCTYPE html><html lang="en"><head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>CareTrack Clinic - Login</title>
@@ -61,6 +59,11 @@
       box-shadow: 0 0 0 0.25rem rgba(123, 47, 247, 0.25);
     }
   </style>
+  <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+
+  <script src="https://unpkg.com/@popperjs/core@2"></script>
+  <script src="https://unpkg.com/tippy.js@6"></script>
+  <link rel="stylesheet" href="https://unpkg.com/tippy.js@6/animations/scale-subtle.css">
 </head>
 <body class="glass-body">
 
@@ -70,14 +73,7 @@
 
   <!-- Theme Switcher -->
   <div class="theme-switch-container">
-    <div class="theme-switch-wrapper" onclick="toggleTheme()">
-      <div class="theme-switch">
-        <div class="theme-switch-toggle">
-          <i class="fa-solid fa-sun icon-sun"></i>
-          <i class="fa-solid fa-moon icon-moon"></i>
-        </div>
-      </div>
-    </div>
+    
   </div>
 
   <div class="login-wrapper glass-card form-enter">
@@ -94,14 +90,14 @@
         <label for="email" class="form-label" style="color: var(--text-muted);">Email address</label>
         <div class="input-group">
           <span class="input-group-text bg-transparent border-end-0" style="border-color: var(--border-color); color: var(--text-muted);"><i class="fa-regular fa-envelope"></i></span>
-          <input type="email" class="form-control border-start-0" id="email" required placeholder="name@example.com">
+          <input type="email" class="form-control border-start-0" id="email" required="" placeholder="name@example.com">
         </div>
       </div>
       <div class="mb-4">
         <label for="password" class="form-label" style="color: var(--text-muted);">Password</label>
         <div class="input-group">
           <span class="input-group-text bg-transparent border-end-0" style="border-color: var(--border-color); color: var(--text-muted);"><i class="fa-solid fa-lock"></i></span>
-          <input type="password" class="form-control border-start-0" id="password" required placeholder="Enter password" oninput="checkPasswordStrength(this.value)">
+          <input type="password" class="form-control border-start-0" id="password" required="" placeholder="Enter password" oninput="checkPasswordStrength(this.value)">
         </div>
         <div class="password-strength-container">
           <div class="password-strength-bar" id="strengthBar"></div>
@@ -198,7 +194,7 @@
           } else if (userRole === 'Doctor') {
             window.location.href = '../doctor/dashboard.html';
           } else if (userRole === 'Receptionist') {
-            window.location.href = '../receptionist/index.html';
+            window.location.href = '../receptionist/dashboard.html';
           } else if (userRole === 'Patient') {
             window.location.href = '../patient/index.html';
           } else {
@@ -220,5 +216,7 @@
       }
     });
   </script>
-</body>
-</html>
+  <script src="../transitions.js"></script>
+
+
+</body></html>

@@ -1,8 +1,18 @@
 require('dotenv').config();
 const app = require('./app');
 const { sequelize } = require('./src/models/index');
+const http = require('http');
+const { Server } = require('socket.io');
 
 const PORT = process.env.PORT || 8000;
+
+// Initialize HTTP server and Socket.io
+const server = http.createServer(app);
+const io = new Server(server, { cors: { origin: '*' } });
+app.set('io', io);
+
+// Initialize global socket utility
+require('./src/utils/socketIO').init(io);
 
 // Test DB connection and start server
 console.log('Attempting to connect to the database and sync models...');
@@ -12,7 +22,7 @@ sequelize.sync({ alter: true }) // Sync models with database
     console.log('✅ Database connection has been established successfully and models are synced.');
     
     // Explicitly start the server
-    const server = app.listen(PORT, () => {
+    server.listen(PORT, () => {
       console.log(`🚀 Server is running on port ${PORT}`);
     });
     

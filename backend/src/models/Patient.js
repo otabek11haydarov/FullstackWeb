@@ -21,6 +21,22 @@ const Patient = sequelize.define('Patient', {
   contactNumber: {
     type: DataTypes.STRING
   },
+  bloodType: {
+    type: DataTypes.ENUM('A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'),
+    allowNull: true
+  },
+  allergies: {
+    type: DataTypes.TEXT,
+    allowNull: true
+  },
+  chronicConditions: {
+    type: DataTypes.TEXT,
+    allowNull: true
+  },
+  medicalHistory: {
+    type: DataTypes.TEXT,
+    allowNull: true
+  },
   userId: {
     type: DataTypes.UUID,
     allowNull: false,

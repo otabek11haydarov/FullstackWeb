@@ -29,8 +29,10 @@ app.use('/api/doctors', require('./src/routes/doctorRoutes'));
 app.use('/api/doctor', require('./src/routes/doctorRoutes')); // Alias for singular route requests
 app.use('/api/patients', require('./src/routes/patientRoutes'));
 app.use('/api/receptionists', require('./src/routes/receptionistRoutes'));
+app.use('/api/receptionist/appointments', require('./src/routes/appointmentRoutes'));
 app.use('/api/diagnoses', require('./src/routes/diagnosisRoutes'));
 app.use('/api/dashboard', require('./src/routes/dashboardRoutes'));
+app.use('/api/activities', require('./src/routes/activitiesRoutes'));
 
 // 404 handler
 app.use((req, res, next) => {

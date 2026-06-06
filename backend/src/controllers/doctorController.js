@@ -1,4 +1,4 @@
-const { Doctor, User, Disease, Appointment, Patient, Diagnosis } = require('../models');
+const { Doctor, User, Disease, Appointment, Patient, Diagnosis, ClinicalHistory, Activity, sequelize } = require('../models');
 const bcrypt = require('bcryptjs');
 
 exports.getAllDoctors = async (req, res) => {
@@ -51,43 +51,86 @@ exports.getDoctor = async (req, res) => {
 
 exports.createDoctor = async (req, res) => {
   try {
-    // Check if user exists
-    const user = await User.findByPk(req.body.userId);
-    if (!user) {
-      return res.status(404).json({
-        status: 'fail',
-        message: 'User not found'
-      });
+    const { firstName, lastName, email, password, specialization, experienceYears, licenseNumber } = req.body;
+
+    // Check if user already exists
+    const existingUser = await User.findOne({ where: { email } });
+    if (existingUser) {
+      return res.status(400).json({ status: 'fail', message: 'Email already in use' });
     }
 
-    const newDoctor = await Doctor.create(req.body);
+    // Hash the password
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    // Create User
+    const user = await User.create({
+      firstName,
+      lastName,
+      email,
+      password: hashedPassword,
+      role: 'Doctor'
+    }, { hooks: false });
+
+    // Create Doctor Profile
+    const newDoctor = await Doctor.create({
+      specialization,
+      experienceYears: experienceYears || 0,
+      licenseNumber: licenseNumber || `LIC-${Date.now()}`,
+      userId: user.id
+    });
+
+    const populatedDoctor = await Doctor.findByPk(newDoctor.id, {
+      include: [{ model: User, attributes: ['firstName', 'lastName', 'email'] }]
+    });
 
     res.status(201).json({
       status: 'success',
       data: {
-        doctor: newDoctor
+        doctor: populatedDoctor
       }
     });
   } catch (err) {
-    res.status(400).json({
-      status: 'fail',
-      message: err.message
-    });
+    res.status(400).json({ status: 'fail', message: err.message });
   }
 };
 
 exports.updateDoctor = async (req, res) => {
   try {
-    const doctor = await Doctor.findByPk(req.params.id);
+    const doctor = await Doctor.findByPk(req.params.id, {
+      include: [{ model: User }]
+    });
 
     if (!doctor) {
-      return res.status(404).json({
-        status: 'fail',
-        message: 'Doctor not found'
-      });
+      return res.status(404).json({ status: 'fail', message: 'Doctor not found' });
     }
 
-    await doctor.update(req.body);
+    const { firstName, lastName, email, password, specialization, experienceYears, licenseNumber } = req.body;
+
+    // Update User details
+    const userUpdates = {};
+    if (firstName) userUpdates.firstName = firstName;
+    if (lastName) userUpdates.lastName = lastName;
+    if (email) userUpdates.email = email;
+    
+    if (password) {
+      const salt = await bcrypt.genSalt(10);
+      userUpdates.password = await bcrypt.hash(password, salt);
+    }
+
+    if (Object.keys(userUpdates).length > 0) {
+      await doctor.User.update(userUpdates, { hooks: false });
+    }
+
+    // Update Doctor details
+    const docUpdates = {};
+    if (specialization) docUpdates.specialization = specialization;
+    if (experienceYears !== undefined) docUpdates.experienceYears = experienceYears;
+    if (licenseNumber) docUpdates.licenseNumber = licenseNumber;
+
+    if (Object.keys(docUpdates).length > 0) {
+      await doctor.update(docUpdates);
+    }
 
     res.status(200).json({
       status: 'success',
@@ -96,10 +139,7 @@ exports.updateDoctor = async (req, res) => {
       }
     });
   } catch (err) {
-    res.status(400).json({
-      status: 'fail',
-      message: err.message
-    });
+    res.status(400).json({ status: 'fail', message: err.message });
   }
 };
 
@@ -108,23 +148,18 @@ exports.deleteDoctor = async (req, res) => {
     const doctor = await Doctor.findByPk(req.params.id);
 
     if (!doctor) {
-      return res.status(404).json({
-        status: 'fail',
-        message: 'Doctor not found'
-      });
+      return res.status(404).json({ status: 'fail', message: 'Doctor not found' });
     }
 
-    await doctor.destroy();
+    // Delete the underlying User. Cascades to Doctor.
+    await User.destroy({ where: { id: doctor.userId } });
 
     res.status(204).json({
       status: 'success',
       data: null
     });
   } catch (err) {
-    res.status(400).json({
-      status: 'fail',
-      message: err.message
-    });
+    res.status(400).json({ status: 'fail', message: err.message });
   }
 };
 
@@ -473,3 +508,214 @@ exports.getReportsStats = async (req, res) => {
     res.status(400).json({ status: 'fail', message: err.message });
   }
 };
+
+// ==========================================
+// SELF-SERVICE: PROFILE UPDATE
+// ==========================================
+exports.updateProfile = async (req, res) => {
+  try {
+    const { firstName, lastName, email } = req.body;
+    
+    // Find the user from the JWT payload
+    const user = await User.findByPk(req.user.id);
+    if (!user) {
+      return res.status(404).json({ status: 'fail', message: 'User not found' });
+    }
+
+    // Update fields
+    if (firstName) user.firstName = firstName;
+    if (lastName) user.lastName = lastName;
+    if (email) user.email = email;
+    
+
+
+    await user.save();
+
+    res.status(200).json({
+      status: 'success',
+      data: {
+        user: {
+          id: user.id,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          email: user.email,
+          role: user.role
+        }
+      }
+    });
+  } catch (err) {
+    res.status(400).json({
+      status: 'fail',
+      message: err.message
+    });
+  }
+};
+
+// ==========================================
+// APPOINTMENT STATUS MANAGEMENT
+// ==========================================
+exports.updateAppointmentStatus = async (req, res) => {
+  try {
+    const appointmentId = req.params.id;
+    const { status } = req.body;
+    
+    const appointment = await Appointment.findByPk(appointmentId, {
+      include: [
+        { model: Patient, include: [{ model: User }] },
+        { model: Doctor, include: [{ model: User }] }
+      ]
+    });
+
+    if (!appointment) {
+      return res.status(404).json({ status: 'fail', message: 'Appointment not found' });
+    }
+
+    const t = await sequelize.transaction();
+
+    try {
+      if (status === 'Completed') {
+        await appointment.update({ status: 'Completed' }, { transaction: t });
+        
+        await ClinicalHistory.create({
+          patientId: appointment.patientId,
+          doctorId: appointment.doctorId,
+          actionType: 'StatusChange',
+          description: `Appointment marked as Completed.`
+        }, { transaction: t });
+
+    } else if (status === 'Pending') {
+      let nextTime = new Date(Date.now() + 2 * 60 * 60 * 1000); // +2 hours
+      
+      const hour = nextTime.getHours();
+      if (hour >= 17) {
+        nextTime.setDate(nextTime.getDate() + 1);
+        nextTime.setHours(9, 0, 0, 0);
+      } else if (hour < 9) {
+        nextTime.setHours(9, 0, 0, 0);
+      }
+
+      await appointment.update({ status: 'Pending', date: nextTime }, { transaction: t });
+      
+      await ClinicalHistory.create({
+        patientId: appointment.patientId,
+        doctorId: appointment.doctorId,
+        actionType: 'StatusChange',
+        description: `Appointment rescheduled for Diagnostics to ${nextTime.toLocaleString()}.`
+      }, { transaction: t });
+
+    } else if (status === 'Rejected') {
+      await appointment.update({ status: 'Rejected' }, { transaction: t });
+
+      await ClinicalHistory.create({
+        patientId: appointment.patientId,
+        doctorId: appointment.doctorId,
+        actionType: 'StatusChange',
+        description: `Appointment rejected.`
+      }, { transaction: t });
+
+      // Notify Receptionists via Activity feed
+      const patientName = appointment.Patient?.User ? `${appointment.Patient.User.firstName} ${appointment.Patient.User.lastName}` : 'Unknown';
+      const doctorName = appointment.Doctor?.User ? `${appointment.Doctor.User.firstName} ${appointment.Doctor.User.lastName}` : 'Unknown';
+      const msg = `Dr. ${doctorName} rejected patient ${patientName}. Reassignment needed.`;
+      
+      const initial = req.user && req.user.firstName ? req.user.firstName.charAt(0) : 'D';
+      
+      const activity = await Activity.create({ message: msg, userInitial: initial });
+      
+      const io = req.app.get('io');
+      if (io) {
+        io.emit('newActivity', {
+          id: activity.id,
+          message: msg,
+          timestamp: activity.createdAt,
+          userInitial: initial
+        });
+      }
+    } else {
+      await t.rollback();
+      return res.status(400).json({ status: 'fail', message: 'Invalid status' });
+    }
+
+    await t.commit();
+
+    res.status(200).json({
+      status: 'success',
+      data: { appointment }
+    });
+    } catch (txErr) {
+      await t.rollback();
+      throw txErr;
+    }
+  } catch (err) {
+    res.status(400).json({ status: 'fail', message: err.message });
+  }
+};
+
+// ==========================================
+// REFERRALS
+// ==========================================
+exports.referPatient = async (req, res) => {
+  try {
+    const patientId = req.params.id;
+    const { newDoctorId, reason } = req.body;
+
+    const patient = await Patient.findByPk(patientId);
+    if (!patient) {
+      return res.status(404).json({ status: 'fail', message: 'Patient not found' });
+    }
+
+    let currentDoctorId = null;
+    if (req.user && req.user.role === 'Doctor') {
+      const doctorProfile = await Doctor.findOne({ where: { userId: req.user.id } });
+      if (doctorProfile) currentDoctorId = doctorProfile.id;
+    }
+
+    const t = await sequelize.transaction();
+
+    try {
+      await patient.update({ doctorId: newDoctorId }, { transaction: t });
+
+      await ClinicalHistory.create({
+        patientId,
+        doctorId: currentDoctorId,
+        actionType: 'Referral',
+        description: `Referred to another doctor. Reason: ${reason || 'Not provided'}`
+      }, { transaction: t });
+
+      await t.commit();
+
+      res.status(200).json({
+        status: 'success',
+        data: { patient }
+      });
+    } catch (txErr) {
+      await t.rollback();
+      throw txErr;
+    }
+  } catch (err) {
+    res.status(400).json({ status: 'fail', message: err.message });
+  }
+};
+
+// ==========================================
+// CLINICAL HISTORY LEDGER
+// ==========================================
+exports.getClinicalHistory = async (req, res) => {
+  try {
+    const history = await ClinicalHistory.findAll({
+      where: { patientId: req.params.id },
+      include: [
+        { model: Doctor, include: [{ model: User, attributes: ['firstName', 'lastName'] }] }
+      ],
+      order: [['date', 'DESC']]
+    });
+
+    res.status(200).json({
+      status: 'success',
+      data: { history }
+    });
+  } catch (err) {
+    res.status(400).json({ status: 'fail', message: err.message });
+  }
+};
+

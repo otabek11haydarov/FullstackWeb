@@ -1,4 +1,4 @@
-const { User, Appointment, Patient, Doctor } = require('../models');
+const { User, Appointment, Patient, Doctor, sequelize } = require('../models');
 const bcrypt = require('bcryptjs');
 const { Op } = require('sequelize');
 
@@ -115,6 +115,7 @@ exports.getAllAppointments = async (req, res) => {
 };
 
 exports.createAppointment = async (req, res) => {
+  const t = await sequelize.transaction();
   try {
     const newAppointment = await Appointment.create({
       date: req.body.date,
@@ -123,10 +124,19 @@ exports.createAppointment = async (req, res) => {
       notes: req.body.notes,
       patientId: req.body.patientId,
       doctorId: req.body.doctorId
-    });
+    }, { transaction: t });
+
+    // Auto-assign Patient to the Doctor
+    await Patient.update(
+      { doctorId: req.body.doctorId },
+      { where: { id: req.body.patientId }, transaction: t }
+    );
+
+    await t.commit();
     res.status(201).json({ status: 'success', data: { appointment: newAppointment } });
   } catch (err) {
-    res.status(400).json({ status: 'fail', message: err.message });
+    await t.rollback();
+    res.status(500).json({ status: 'error', message: err.message });
   }
 };
 

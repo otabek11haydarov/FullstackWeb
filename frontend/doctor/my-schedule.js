@@ -28,10 +28,10 @@ async function fetchAndRenderSchedule() {
     if (res.ok) {
       renderTimeline(data.data.appointments);
     } else {
-      showToast(data.message || 'Error fetching appointments', 'error');
+      showNotification(data.message || 'Error fetching appointments', 'error');
     }
   } catch (err) {
-    showToast('Failed to connect to server', 'error');
+    showNotification('Failed to connect to server', 'error');
   }
 }
 
@@ -84,23 +84,3 @@ function renderTimeline(appointments) {
   }
 }
 
-function showToast(message, type = 'success') {
-  const container = document.querySelector('.toast-container');
-  if (!container) return;
-  const toastHtml = `
-    <div class="toast align-items-center border-0 mb-2" role="alert" aria-live="assertive" aria-atomic="true" style="background: var(--glass-panel); backdrop-filter: blur(10px); border: 1px solid var(--glass-border); color: #fff;">
-      <div class="d-flex">
-        <div class="toast-body fw-medium">
-          ${type === 'success' ? '<i class="fa-solid fa-circle-check" style="color: var(--neon-cyan);"></i>' : '<i class="fa-solid fa-triangle-exclamation" style="color: #f107a3;"></i>'} 
-          ${message}
-        </div>
-        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-      </div>
-    </div>
-  `;
-  container.insertAdjacentHTML('beforeend', toastHtml);
-  const toastEl = container.lastElementChild;
-  const toast = new bootstrap.Toast(toastEl, { delay: 3000 });
-  toast.show();
-  toastEl.addEventListener('hidden.bs.toast', () => toastEl.remove());
-}

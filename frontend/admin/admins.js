@@ -67,34 +67,7 @@ function showConfirm(message, callback) {
   if (confirmModal) confirmModal.show();
 }
 
-function showToast(message, type = 'success') {
-  const container = document.querySelector('.toast-container');
-  if (!container) return;
-  
-  const icon = type === 'success' 
-    ? '<i class="fa-solid fa-circle-check toast-success-icon me-2"></i>' 
-    : '<i class="fa-solid fa-circle-exclamation toast-error-icon me-2"></i>';
-  
-  const toastHtml = `
-    <div class="toast glass-toast align-items-center border-0 mb-2" role="alert" aria-live="assertive" aria-atomic="true">
-      <div class="d-flex">
-        <div class="toast-body d-flex align-items-center fw-medium">
-          ${icon} ${message}
-        </div>
-        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-      </div>
-    </div>
-  `;
-  
-  container.insertAdjacentHTML('beforeend', toastHtml);
-  const toastEl = container.lastElementChild;
-  const toast = new bootstrap.Toast(toastEl, { delay: 3000 });
-  toast.show();
-  
-  toastEl.addEventListener('hidden.bs.toast', () => {
-    toastEl.remove();
-  });
-}
+
 
 async function fetchAdmins() {
   try {
@@ -106,10 +79,10 @@ async function fetchAdmins() {
       adminsData = data.data.admins;
       renderAdmins();
     } else {
-      showToast(data.message, 'danger');
+      showNotification(data.message, 'danger');
     }
   } catch (err) {
-    showToast('Error fetching admins', 'danger');
+    showNotification('Error fetching admins', 'danger');
   }
 }
 
@@ -207,7 +180,7 @@ async function saveAdmin() {
     const data = await res.json();
     if (res.ok) {
       adminModal.hide();
-      showToast(`Admin successfully ${id ? 'updated' : 'created'}!`, 'success');
+      showNotification(`Admin successfully ${id ? 'updated' : 'created'}!`, 'success');
       
       if (id) {
         // Update DOM dynamically
@@ -229,10 +202,10 @@ async function saveAdmin() {
         fetchAdmins();
       }
     } else {
-      showToast(data.message, 'danger');
+      showNotification(data.message, 'danger');
     }
   } catch (err) {
-    showToast('Error saving admin', 'danger');
+    showNotification('Error saving admin', 'danger');
   }
 }
 
@@ -245,7 +218,7 @@ async function deleteAdmin(id) {
       });
 
       if (res.ok || res.status === 204) {
-        showToast('Admin successfully deleted!', 'success');
+        showNotification('Admin successfully deleted!', 'success');
         
         // Dynamically remove the row from the DOM
         const row = document.getElementById(`admin-row-${id}`);
@@ -255,10 +228,10 @@ async function deleteAdmin(id) {
         adminsData = adminsData.filter(a => a.id !== id);
       } else {
         const data = await res.json();
-        showToast(data.message, 'danger');
+        showNotification(data.message, 'danger');
       }
     } catch (err) {
-      showToast('Error deleting admin', 'danger');
+      showNotification('Error deleting admin', 'danger');
     }
   });
 }

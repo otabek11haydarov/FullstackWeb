@@ -32,12 +32,9 @@ function getThemeColors() {
 
 function initDashboard() {
   // Set User Profile UI
-  userNameDisplay.textContent = `${user.firstName} ${user.lastName}`;
-  userInitial.textContent = user.firstName.charAt(0).toUpperCase();
   
   let roleFormatted = user.role.replace('_', ' ');
   roleFormatted = roleFormatted.charAt(0).toUpperCase() + roleFormatted.slice(1);
-  userRoleDisplay.textContent = roleFormatted;
   
   welcomeGreeting.textContent = `Welcome back, ${user.firstName}! Here's what's happening in your clinic today.`;
 
@@ -243,3 +240,36 @@ async function fetchStats() {
 }
 
 document.addEventListener('DOMContentLoaded', initDashboard);
+
+// Setup Real-Time Socket Listener
+const socket = io('http://localhost:8000');
+socket.on('globalActivity', (activity) => {
+  const activityContainer = document.getElementById('recent-activity-container');
+  if (!activityContainer) return;
+
+  const firstChild = activityContainer.firstElementChild;
+  if (firstChild && firstChild.textContent === 'No recent activity.') {
+    activityContainer.innerHTML = '';
+  }
+
+  const colorClass = activity.user === 'System' ? 'var(--secondary-solid)' : 'var(--primary-solid)';
+  
+  // Create element dynamically
+  const newDiv = document.createElement('div');
+  newDiv.className = 'timeline-item d-flex mb-4';
+  newDiv.style.animation = 'fadeInDown 0.5s ease-out forwards';
+  
+  newDiv.innerHTML = `
+    <div class="timeline-dot mt-1 me-3 rounded-circle" style="width:10px; height:10px; background: ${colorClass}; box-shadow: 0 0 10px ${colorClass};"></div>
+    <div class="flex-grow-1">
+      <p class="mb-0 fw-semibold" style="color: var(--text-primary);">${activity.message}</p>
+      <small style="color: var(--text-secondary);">${activity.userInitial || activity.user} · Just now</small>
+    </div>
+  `;
+  
+  activityContainer.prepend(newDiv);
+
+  if (activityContainer.children.length > 50) {
+    activityContainer.lastElementChild.remove();
+  }
+});

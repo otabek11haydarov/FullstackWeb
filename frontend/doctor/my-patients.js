@@ -12,7 +12,6 @@ document.addEventListener('DOMContentLoaded', () => {
   // Populate User Avatar
   const avatar = document.getElementById('user-avatar');
   if (avatar && user.firstName) {
-    avatar.textContent = user.firstName.charAt(0).toUpperCase();
   }
 
   document.getElementById('logoutBtn').addEventListener('click', (e) => {

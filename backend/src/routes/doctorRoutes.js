@@ -13,7 +13,10 @@ router.get('/patients', roleMiddleware.restrictTo('Doctor', 'Super Admin'), doct
 router.get('/patients/:id/profile', roleMiddleware.restrictTo('Doctor', 'Super Admin'), doctorController.getPatientProfile);
 router.get('/diagnoses', roleMiddleware.restrictTo('Doctor', 'Super Admin'), doctorController.getDoctorDiagnoses);
 router.get('/appointments', roleMiddleware.restrictTo('Doctor', 'Super Admin'), doctorController.getDoctorAppointments);
+router.put('/appointments/:id/status', roleMiddleware.restrictTo('Doctor', 'Super Admin'), doctorController.updateAppointmentStatus);
 router.get('/reports/stats', roleMiddleware.restrictTo('Doctor', 'Super Admin'), doctorController.getReportsStats);
+
+router.put('/profile', roleMiddleware.restrictTo('Doctor'), doctorController.updateProfile);
 
 
 router
@@ -34,5 +37,8 @@ router
 router
   .route('/:doctorId/patients/:patientId/history')
   .get(roleMiddleware.restrictTo('Super Admin', 'Admin', 'Doctor'), doctorController.getPatientHistory);
+
+router.post('/patients/:id/refer', roleMiddleware.restrictTo('Doctor', 'Super Admin'), doctorController.referPatient);
+router.get('/patients/:id/clinical-history', roleMiddleware.restrictTo('Doctor', 'Super Admin'), doctorController.getClinicalHistory);
 
 module.exports = router;

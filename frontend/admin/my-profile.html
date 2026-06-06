@@ -1,6 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
+<!DOCTYPE html><html lang="en"><head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>CareTrack Clinic - Admin Profile</title>
@@ -12,6 +10,11 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="../global.css">
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+
+  <script src="https://unpkg.com/@popperjs/core@2"></script>
+  <script src="https://unpkg.com/tippy.js@6"></script>
+  <link rel="stylesheet" href="https://unpkg.com/tippy.js@6/animations/scale-subtle.css">
 </head>
 <body class="glass-body">
 
@@ -35,15 +38,7 @@
       </ul>
 
       <div class="sidebar-footer mt-auto p-3">
-        <div class="d-flex align-items-center cursor-pointer" onclick="window.location.href='my-profile.html'">
-          <div class="avatar text-white rounded-circle d-flex align-items-center justify-content-center me-2" style="width: 40px; height: 40px; background: var(--primary-gradient);">
-            <span id="userInitial">U</span>
-          </div>
-          <div>
-            <div class="fw-bold fs-6 lh-1" id="userNameDisplay">User Name</div>
-            <small style="color: var(--text-muted);" id="userRoleDisplay">Role</small>
-          </div>
-        </div>
+        <div class="userProfileTarget"></div>
       </div>
     </aside>
 
@@ -54,14 +49,7 @@
       <header class="top-header d-flex justify-content-between align-items-center mb-4">
         <h2 class="mb-0 fw-bold" style="color: var(--text-primary);">My Profile</h2>
         <div class="header-actions d-flex align-items-center gap-3">
-          <div class="theme-switch-wrapper" onclick="toggleTheme()" title="Toggle Dark/Light Mode">
-            <div class="theme-switch">
-              <div class="theme-switch-toggle">
-                <i class="fa-solid fa-sun icon-sun"></i>
-                <i class="fa-solid fa-moon icon-moon"></i>
-              </div>
-            </div>
-          </div>
+          
           
           <a href="my-profile.html" class="text-light text-decoration-none d-flex align-items-center gap-2 custom-hover-effect">
             <div class="rounded-circle d-flex justify-content-center align-items-center" style="width: 40px; height: 40px; background: linear-gradient(135deg, var(--neon-purple), var(--neon-cyan));">
@@ -96,15 +84,15 @@
               <div class="row g-4">
                 <div class="col-md-6">
                   <label class="form-label fw-semibold" style="color: var(--text-secondary);">First Name</label>
-                  <input type="text" class="form-control bg-transparent text-light border-secondary rounded-3" id="profileFirstName" required>
+                  <input type="text" class="form-control bg-transparent text-light border-secondary rounded-3" id="profileFirstName" required="">
                 </div>
                 <div class="col-md-6">
                   <label class="form-label fw-semibold" style="color: var(--text-secondary);">Last Name</label>
-                  <input type="text" class="form-control bg-transparent text-light border-secondary rounded-3" id="profileLastName" required>
+                  <input type="text" class="form-control bg-transparent text-light border-secondary rounded-3" id="profileLastName" required="">
                 </div>
                 <div class="col-12">
                   <label class="form-label fw-semibold" style="color: var(--text-secondary);">Email Address</label>
-                  <input type="email" class="form-control bg-transparent text-light border-secondary rounded-3" id="profileEmail" required>
+                  <input type="email" class="form-control bg-transparent text-light border-secondary rounded-3" id="profileEmail" required="">
                 </div>
                 <div class="col-12">
                   <label class="form-label fw-semibold" style="color: var(--text-secondary);">New Password</label>
@@ -126,9 +114,11 @@
   </div>
 
   <!-- Toast Container -->
-  <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1055;"></div>
+  
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
   <script src="my-profile.js"></script>
-</body>
-</html>
+  <script src="../transitions.js"></script>
+
+
+</body></html>

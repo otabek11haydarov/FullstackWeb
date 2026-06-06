@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 const { promisify } = require('util');
 require('dotenv').config();
-// We will need the User model later, but for now we just verify the token
+const { User } = require('../models');
 
 exports.protect = async (req, res, next) => {
   try {
@@ -26,12 +26,16 @@ exports.protect = async (req, res, next) => {
     // 2) Verification token
     const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
 
-    // 3) We'll attach the user data to the request object. 
-    // In a full implementation, we'd fetch the user from the database here
-    // to ensure they still exist. For now we use decoded data.
-    req.user = decoded;
-    
-    console.log('Decoded Token:', req.user);
+    // 3) Fetch the user from the database
+    const currentUser = await User.findByPk(decoded.id);
+    if (!currentUser) {
+      return res.status(401).json({
+        status: 'fail',
+        message: 'The user belonging to this token does no longer exist.'
+      });
+    }
+
+    req.user = currentUser;
     next();
   } catch (err) {
     return res.status(401).json({

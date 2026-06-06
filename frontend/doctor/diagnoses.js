@@ -9,16 +9,11 @@ if (!token || !userStr) {
 const user = JSON.parse(userStr);
 
 document.addEventListener('DOMContentLoaded', () => {
-  // Theme Setup (mirroring dashboard logic)
-  const savedTheme = localStorage.getItem('doctorTheme');
-  if (savedTheme === 'light') {
-    document.body.classList.add('light-mode');
-  }
+
 
   // User Avatar
   const avatar = document.getElementById('user-avatar');
   if (avatar && user.firstName) {
-    avatar.textContent = user.firstName.charAt(0).toUpperCase();
     avatar.style.display = 'flex';
     avatar.style.alignItems = 'center';
     avatar.style.justifyContent = 'center';
@@ -37,15 +32,6 @@ document.addEventListener('DOMContentLoaded', () => {
   fetchDiagnoses();
 });
 
-// Theme Toggle Function for the switcher
-window.toggleTheme = function() {
-  document.body.classList.toggle('light-mode');
-  if (document.body.classList.contains('light-mode')) {
-    localStorage.setItem('doctorTheme', 'light');
-  } else {
-    localStorage.setItem('doctorTheme', 'dark');
-  }
-};
 
 async function fetchDiagnoses() {
   const tbody = document.getElementById('diagnosesTableBody');

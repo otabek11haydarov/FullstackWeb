@@ -60,34 +60,7 @@ function showConfirm(message, callback) {
   if (confirmModal) confirmModal.show();
 }
 
-function showToast(message, type = 'success') {
-  const container = document.querySelector('.toast-container');
-  if (!container) return;
-  
-  const icon = type === 'success' 
-    ? '<i class="fa-solid fa-circle-check toast-success-icon me-2"></i>' 
-    : '<i class="fa-solid fa-circle-exclamation toast-error-icon me-2"></i>';
-  
-  const toastHtml = `
-    <div class="toast glass-toast align-items-center border-0 mb-2" role="alert" aria-live="assertive" aria-atomic="true">
-      <div class="d-flex">
-        <div class="toast-body d-flex align-items-center fw-medium">
-          ${icon} ${message}
-        </div>
-        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-      </div>
-    </div>
-  `;
-  
-  container.insertAdjacentHTML('beforeend', toastHtml);
-  const toastEl = container.lastElementChild;
-  const toast = new bootstrap.Toast(toastEl, { delay: 3000 });
-  toast.show();
-  
-  toastEl.addEventListener('hidden.bs.toast', () => {
-    toastEl.remove();
-  });
-}
+
 
 async function fetchRelationalData() {
   try {
@@ -108,7 +81,7 @@ async function fetchRelationalData() {
     populateDropdowns();
     renderDiagnoses();
   } catch (err) {
-    showToast('Error loading directory data', 'danger');
+    showNotification('Error loading directory data', 'danger');
   }
 }
 
@@ -224,7 +197,7 @@ async function createDiagnosis() {
   };
 
   if (!payload.patientId || !payload.doctorId || !payload.condition || !payload.date) {
-    showToast('Please fill all required fields.', 'danger');
+    showNotification('Please fill all required fields.', 'danger');
     return;
   }
 
@@ -241,17 +214,17 @@ async function createDiagnosis() {
     const data = await res.json();
     if (res.ok || res.status === 201) {
       addDiagnosisModalInstance.hide();
-      showToast('Successfully added diagnosis!', 'success');
+      showNotification('Successfully added diagnosis!', 'success');
       document.getElementById('addDiagnosisForm').reset();
       
       const newDiag = data.data.diagnosis;
       diagnosesData.unshift(newDiag);
       renderDiagnoses(); // Re-render to ensure top placement and correct event listeners
     } else {
-      showToast(data.message || 'Error adding diagnosis', 'danger');
+      showNotification(data.message || 'Error adding diagnosis', 'danger');
     }
   } catch (err) {
-    showToast('Network error while adding diagnosis', 'danger');
+    showNotification('Network error while adding diagnosis', 'danger');
   }
 }
 
@@ -264,7 +237,7 @@ async function deleteDiagnosis(id) {
       });
 
       if (res.ok || res.status === 204) {
-        showToast('Diagnosis deleted', 'success');
+        showNotification('Diagnosis deleted', 'success');
         
         const row = document.getElementById(`diagnosis-row-${id}`);
         if (row) row.remove();
@@ -272,10 +245,10 @@ async function deleteDiagnosis(id) {
         diagnosesData = diagnosesData.filter(d => d.id !== id);
       } else {
         const data = await res.json();
-        showToast(data.message, 'danger');
+        showNotification(data.message, 'danger');
       }
     } catch (err) {
-      showToast('Error deleting diagnosis', 'danger');
+      showNotification('Error deleting diagnosis', 'danger');
     }
   });
 }
@@ -336,7 +309,7 @@ async function updateDiagnosis() {
     const data = await res.json();
     if (res.ok || res.status === 200) {
       editDiagnosisModalInstance.hide();
-      showToast('Diagnosis updated successfully', 'success');
+      showNotification('Diagnosis updated successfully', 'success');
 
       // Update local data
       const updatedDiag = data.data.diagnosis;
@@ -358,9 +331,9 @@ async function updateDiagnosis() {
         tr.querySelector('.date-col').textContent = updatedDiag.date;
       }
     } else {
-      showToast(data.message || 'Error updating diagnosis', 'danger');
+      showNotification(data.message || 'Error updating diagnosis', 'danger');
     }
   } catch (err) {
-    showToast('Network error while updating diagnosis', 'danger');
+    showNotification('Network error while updating diagnosis', 'danger');
   }
 }

@@ -54,34 +54,7 @@ function showConfirm(message, callback) {
   if (confirmModal) confirmModal.show();
 }
 
-function showToast(message, type = 'success') {
-  const container = document.querySelector('.toast-container');
-  if (!container) return;
-  
-  const icon = type === 'success' 
-    ? '<i class="fa-solid fa-circle-check toast-success-icon me-2"></i>' 
-    : '<i class="fa-solid fa-circle-exclamation toast-error-icon me-2"></i>';
-  
-  const toastHtml = `
-    <div class="toast glass-toast align-items-center border-0 mb-2" role="alert" aria-live="assertive" aria-atomic="true">
-      <div class="d-flex">
-        <div class="toast-body d-flex align-items-center fw-medium">
-          ${icon} ${message}
-        </div>
-        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-      </div>
-    </div>
-  `;
-  
-  container.insertAdjacentHTML('beforeend', toastHtml);
-  const toastEl = container.lastElementChild;
-  const toast = new bootstrap.Toast(toastEl, { delay: 3000 });
-  toast.show();
-  
-  toastEl.addEventListener('hidden.bs.toast', () => {
-    toastEl.remove();
-  });
-}
+
 
 async function fetchPatients() {
   try {
@@ -93,10 +66,10 @@ async function fetchPatients() {
       patientsData = data.data.patients;
       renderPatients();
     } else {
-      showToast(data.message, 'danger');
+      showNotification(data.message, 'danger');
     }
   } catch (err) {
-    showToast('Error fetching patients', 'danger');
+    showNotification('Error fetching patients', 'danger');
   }
 }
 
@@ -221,11 +194,14 @@ async function createPatient() {
     password: document.getElementById('addPassword').value,
     age: document.getElementById('addAge').value,
     gender: document.getElementById('addGender').value,
-    doctorId: document.getElementById('addAssignedDoctor').value || null
+    doctorId: document.getElementById('addAssignedDoctor').value || null,
+    bloodType: document.getElementById('addBloodType').value || null,
+    allergies: document.getElementById('addAllergies').value,
+    chronicConditions: document.getElementById('addChronicConditions').value
   };
 
   if (!payload.firstName || !payload.lastName || !payload.email || !payload.password || !payload.age) {
-    showToast('Please fill all required fields.', 'danger');
+    showNotification('Please fill all required fields.', 'danger');
     return;
   }
 
@@ -242,17 +218,17 @@ async function createPatient() {
     const data = await res.json();
     if (res.ok || res.status === 201) {
       addPatientModalInstance.hide();
-      showToast('Successfully added patient!', 'success');
+      showNotification('Successfully added patient!', 'success');
       document.getElementById('addPatientForm').reset();
       
       const newPat = data.data.patient;
       patientsData.unshift(newPat);
       renderPatients();
     } else {
-      showToast(data.message || 'Error adding patient', 'danger');
+      showNotification(data.message || 'Error adding patient', 'danger');
     }
   } catch (err) {
-    showToast('Network error while adding patient', 'danger');
+    showNotification('Network error while adding patient', 'danger');
   }
 }
 
@@ -265,7 +241,7 @@ async function deletePatient(id) {
       });
 
       if (res.ok || res.status === 204) {
-        showToast('Patient removed', 'success');
+        showNotification('Patient removed', 'success');
         
         const row = document.getElementById(`patient-row-${id}`);
         if (row) row.remove();
@@ -273,10 +249,10 @@ async function deletePatient(id) {
         patientsData = patientsData.filter(p => p.id !== id);
       } else {
         const data = await res.json();
-        showToast(data.message, 'danger');
+        showNotification(data.message, 'danger');
       }
     } catch (err) {
-      showToast('Error deleting patient', 'danger');
+      showNotification('Error deleting patient', 'danger');
     }
   });
 }
@@ -293,6 +269,9 @@ function openEditPatientModal(id) {
   document.getElementById('editAge').value = calculateAge(patient.dateOfBirth);
   document.getElementById('editGender').value = patient.gender;
   document.getElementById('editAssignedDoctor').value = patient.doctorId || '';
+  document.getElementById('editBloodType').value = patient.bloodType || '';
+  document.getElementById('editAllergies').value = patient.allergies || '';
+  document.getElementById('editChronicConditions').value = patient.chronicConditions || '';
 
   editPatientModalInstance.show();
 }
@@ -305,7 +284,10 @@ async function updatePatient() {
     email: document.getElementById('editEmail').value,
     age: document.getElementById('editAge').value,
     gender: document.getElementById('editGender').value,
-    doctorId: document.getElementById('editAssignedDoctor').value || null
+    doctorId: document.getElementById('editAssignedDoctor').value || null,
+    bloodType: document.getElementById('editBloodType').value || null,
+    allergies: document.getElementById('editAllergies').value,
+    chronicConditions: document.getElementById('editChronicConditions').value
   };
 
   const password = document.getElementById('editPassword').value;
@@ -326,7 +308,7 @@ async function updatePatient() {
     const data = await res.json();
     if (res.ok || res.status === 200) {
       editPatientModalInstance.hide();
-      showToast('Updated successfully', 'success');
+      showNotification('Updated successfully', 'success');
 
       // Update local data
       const updatedPat = data.data.patient;
@@ -362,9 +344,9 @@ async function updatePatient() {
         tr.querySelector('.avatar').textContent = updatedPat.User.firstName.charAt(0);
       }
     } else {
-      showToast(data.message || 'Error updating patient', 'danger');
+      showNotification(data.message || 'Error updating patient', 'danger');
     }
   } catch (err) {
-    showToast('Network error while updating patient', 'danger');
+    showNotification('Network error while updating patient', 'danger');
   }
 }

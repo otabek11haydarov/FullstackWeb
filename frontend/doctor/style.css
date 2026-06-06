@@ -316,7 +316,7 @@
       left: 3px;
       width: 28px;
       height: 28px;
-      background-
+      background-color: #fff;
       border-radius: 50%;
       display: flex;
       justify-content: center;
@@ -337,27 +337,36 @@
     /* Segmented Control */
     .segmented-control {
       background: rgba(255,255,255,0.05);
-      border-radius: 12px;
-      padding: 4px;
+      border-radius: 16px;
+      padding: 6px;
       display: flex;
-      gap: 4px;
+      justify-content: center;
+      gap: 8px;
       border: 1px solid var(--glass-border);
+      margin: 0 auto;
+      width: fit-content;
     }
     .seg-btn {
       background: transparent;
       border: none;
       color: rgba(255,255,255,0.5);
-      border-radius: 8px;
-      padding: 4px 12px;
-      font-size: 0.85rem;
+      border-radius: 12px;
+      padding: 8px 24px;
+      font-size: 1rem;
       font-weight: 500;
-      transition: all 0.3s ease;
+      transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
       cursor: pointer;
     }
+    .seg-btn:hover {
+      background: rgba(255,255,255,0.1);
+      color: #fff;
+      transform: translateY(-2px);
+    }
     .seg-btn.active {
-      background: rgba(255,255,255,0.15);
-      
-      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+      background: rgba(123, 47, 247, 0.4); /* Glowing purple for active filter */
+      color: #fff;
+      box-shadow: 0 4px 15px rgba(123, 47, 247, 0.5);
+      transform: scale(1.05);
     }
     body.light-mode .segmented-control {
       background: rgba(0,0,0,0.05);
@@ -366,10 +375,14 @@
     body.light-mode .seg-btn {
       color: #6c757d;
     }
+    body.light-mode .seg-btn:hover {
+      background: rgba(0,0,0,0.05);
+      color: #333;
+    }
     body.light-mode .seg-btn.active {
       background: #fff;
       color: #212529;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
     }
     
     .btn-neon-cyan {
@@ -499,3 +512,63 @@
 
 .time-col-min { min-width: 60px; }
 .border-dashed { border-style: dashed !important; }
+
+/* ==========================================
+   FullCalendar Dark Glassmorphism Overrides
+   ========================================== */
+:root {
+  --fc-page-bg-color: transparent !important;
+  --fc-neutral-bg-color: rgba(255, 255, 255, 0.05) !important;
+  --fc-neutral-text-color: var(--text-light) !important;
+  --fc-border-color: rgba(255, 255, 255, 0.1) !important;
+  --fc-today-bg-color: rgba(0, 245, 255, 0.05) !important;
+}
+
+.fc-glass-theme .fc-theme-standard td, 
+.fc-glass-theme .fc-theme-standard th {
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.fc-glass-theme .fc-col-header-cell-cushion, 
+.fc-glass-theme .fc-timegrid-slot-label-cushion {
+  color: var(--text-light, #e2e8f0);
+  font-weight: 500;
+}
+
+.fc-glass-theme .fc-event {
+  border: none !important;
+  border-radius: 8px !important;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  padding: 2px 4px;
+}
+
+.fc-glass-theme .fc-event:hover {
+  transform: scale(1.02);
+  z-index: 5 !important;
+}
+
+.fc-glass-theme .fc-v-event .fc-event-main-frame {
+  flex-direction: column;
+}
+
+.fc-glass-theme .fc-event-title {
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.fc-glass-theme .fc-event-time {
+  font-size: 0.75rem;
+  opacity: 0.8;
+}
+
+body.light-mode .fc-glass-theme .fc-theme-standard td, 
+body.light-mode .fc-glass-theme .fc-theme-standard th {
+  border-color: rgba(0, 0, 0, 0.1) !important;
+}
+
+body.light-mode .fc-glass-theme .fc-col-header-cell-cushion, 
+body.light-mode .fc-glass-theme .fc-timegrid-slot-label-cushion {
+  color: #333;
+}

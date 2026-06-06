@@ -1,6 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
+<!DOCTYPE html><html lang="en"><head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>CareTrack Clinic - Emergency Appointments</title>
@@ -11,6 +9,11 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+
+  <script src="https://unpkg.com/@popperjs/core@2"></script>
+  <script src="https://unpkg.com/tippy.js@6"></script>
+  <link rel="stylesheet" href="https://unpkg.com/tippy.js@6/animations/scale-subtle.css">
 </head>
 <body class="glass-body">
   <div class="app-container">
@@ -34,15 +37,7 @@
       </ul>
 
       <div class="sidebar-footer mt-auto">
-        <div class="d-flex align-items-center">
-          <div class="avatar text-white rounded-circle d-flex align-items-center justify-content-center me-2" style="width: 40px; height: 40px; background: var(--primary-gradient);">
-            <span id="userInitial">U</span>
-          </div>
-          <div>
-            <div class="fw-bold fs-6 lh-1" id="userNameDisplay">User Name</div>
-            <small style="color: var(--text-muted);" id="userRoleDisplay">Role</small>
-          </div>
-        </div>
+        <div class="userProfileTarget"></div>
       </div>
     </aside>
 
@@ -64,14 +59,7 @@
             <input type="date" id="filterEnd" class="form-control bg-transparent text-light border-secondary">
             <button id="filterBtn" class="btn btn-outline-info">Fetch</button>
           </div>
-          <div class="theme-switch-wrapper" onclick="toggleTheme()" title="Toggle Dark/Light Mode">
-            <div class="theme-switch">
-              <div class="theme-switch-toggle">
-                <i class="fa-solid fa-sun icon-sun"></i>
-                <i class="fa-solid fa-moon icon-moon"></i>
-              </div>
-            </div>
-          </div>
+          
           
           <a href="my-profile.html" class="text-light text-decoration-none d-flex align-items-center gap-2 custom-hover-effect">
             <div class="rounded-circle d-flex justify-content-center align-items-center" style="width: 40px; height: 40px; background: linear-gradient(135deg, var(--neon-purple), var(--neon-cyan));">
@@ -111,7 +99,7 @@
           <table class="table table-hover align-middle mb-0 custom-table">
             <thead class="table-dark text-light border-bottom border-secondary">
               <tr>
-                <th style="color: var(--text-muted);">Date & Time</th>
+                <th style="color: var(--text-muted);">Date &amp; Time</th>
                 <th style="color: var(--text-muted);">Patient</th>
                 <th style="color: var(--text-muted);">Assigned Doctor</th>
                 <th style="color: var(--text-muted);">Status</th>
@@ -141,15 +129,15 @@
             <input type="hidden" id="appointmentId">
             <div class="mb-3">
               <label class="form-label text-white-50">Patient</label>
-              <select class="form-select bg-transparent text-white border-secondary" id="patientSelect" required></select>
+              <select class="form-select bg-transparent text-white border-secondary" id="patientSelect" required=""></select>
             </div>
             <div class="mb-3">
               <label class="form-label text-white-50">Doctor</label>
-              <select class="form-select bg-transparent text-white border-secondary" id="doctorSelect" required></select>
+              <select class="form-select bg-transparent text-white border-secondary" id="doctorSelect" required=""></select>
             </div>
             <div class="mb-3">
-              <label class="form-label text-white-50">Date & Time</label>
-              <input type="datetime-local" class="form-control bg-transparent text-white border-secondary" id="appointmentDate" required>
+              <label class="form-label text-white-50">Date &amp; Time</label>
+              <input type="datetime-local" class="form-control bg-transparent text-white border-secondary" id="appointmentDate" required="">
             </div>
             <div class="mb-3">
               <label class="form-label text-white-50">Status</label>
@@ -162,7 +150,7 @@
             </div>
             <div class="mb-3">
               <label class="form-label text-white-50">Reason</label>
-              <input type="text" class="form-control bg-transparent text-white border-secondary" id="appointmentReason" required>
+              <input type="text" class="form-control bg-transparent text-white border-secondary" id="appointmentReason" required="">
             </div>
             <button type="submit" class="btn btn-danger w-100 fw-bold">Execute Override</button>
           </form>
@@ -173,5 +161,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
   <script src="appointments.js"></script>
-</body>
-</html>
+  <script src="../transitions.js"></script>
+
+
+</body></html>

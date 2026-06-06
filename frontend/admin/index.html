@@ -1,6 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
+<!DOCTYPE html><html lang="en"><head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>CareTrack Clinic - Admin Dashboard</title>
@@ -22,6 +20,11 @@
   
   <!-- Custom Styles -->
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+
+  <script src="https://unpkg.com/@popperjs/core@2"></script>
+  <script src="https://unpkg.com/tippy.js@6"></script>
+  <link rel="stylesheet" href="https://unpkg.com/tippy.js@6/animations/scale-subtle.css">
 </head>
 <body class="glass-body">
 
@@ -78,15 +81,7 @@
       </ul>
 
       <div class="sidebar-footer mt-auto">
-        <div class="d-flex align-items-center">
-          <div class="avatar text-white rounded-circle d-flex align-items-center justify-content-center me-2" style="width: 40px; height: 40px; background: var(--primary-gradient);">
-            <span id="userInitial">U</span>
-          </div>
-          <div>
-            <div class="fw-bold fs-6 lh-1" id="userNameDisplay">User Name</div>
-            <small style="color: var(--text-muted);" id="userRoleDisplay">Role</small>
-          </div>
-        </div>
+        <div class="userProfileTarget"></div>
       </div>
     </aside>
 
@@ -103,16 +98,6 @@
         </div>
 
         <div class="header-actions d-flex align-items-center gap-3">
-          <!-- Animated Theme Switcher -->
-          <div class="theme-switch-wrapper" onclick="toggleTheme()" title="Toggle Dark/Light Mode">
-            <div class="theme-switch">
-              <div class="theme-switch-toggle">
-                <i class="fa-solid fa-sun icon-sun"></i>
-                <i class="fa-solid fa-moon icon-moon"></i>
-              </div>
-            </div>
-          </div>
-          
           <a href="my-profile.html" class="text-light text-decoration-none d-flex align-items-center gap-2 custom-hover-effect">
             <div class="rounded-circle d-flex justify-content-center align-items-center" style="width: 40px; height: 40px; background: linear-gradient(135deg, var(--neon-purple), var(--neon-cyan));">
               <i class="fas fa-user text-white"></i>
@@ -208,7 +193,7 @@
           <div class="col-md-5">
             <div class="card border-0 rounded-4 h-100 p-4 pb-2">
               <h5 class="fw-bold mb-4" style="color: var(--text-primary);">Recent Activity</h5>
-              <div class="timeline" id="recent-activity-container">
+              <div class="timeline timeline-container" id="recent-activity-container">
                 <div class="timeline-item d-flex mb-4">
                   <div class="timeline-dot mt-1 me-3 rounded-circle" style="width:10px; height:10px; background: var(--primary-solid);"></div>
                   <div class="flex-grow-1">
@@ -300,6 +285,8 @@
     </main>
   </div>
 
+  <!-- Socket.io -->
+  <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
   <!-- Chart.js CDN -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <!-- Bootstrap Bundle -->
@@ -307,5 +294,7 @@
   <!-- Custom Logic -->
   <script src="dashboard.js"></script>
 
-</body>
-</html>
+  <script src="../transitions.js"></script>
+
+
+</body></html>

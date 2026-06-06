@@ -66,7 +66,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const data = await res.json();
       
       if (res.ok) {
-        showToast('Profile Updated Successfully!', 'success');
+        showNotification('Profile Updated Successfully!', 'success');
         
         // Update local storage
         user.firstName = data.data.user.firstName;
@@ -85,15 +85,15 @@ document.addEventListener('DOMContentLoaded', () => {
         
         if (newPassword.trim() !== '') {
            setTimeout(() => {
-             alert('Password changed. Please log in again.');
+             showNotification('Password changed. Please log in again.');
              document.getElementById('logoutBtn').click();
            }, 1500);
         }
       } else {
-        showToast(data.message || 'Error updating profile', 'danger');
+        showNotification(data.message || 'Error updating profile', 'danger');
       }
     } catch (err) {
-      showToast('Network error while updating profile', 'danger');
+      showNotification('Network error while updating profile', 'danger');
     } finally {
       submitBtn.innerHTML = 'Save Changes <i class="fa-solid fa-save ms-2"></i>';
       submitBtn.disabled = false;
@@ -101,34 +101,3 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 
-function showToast(message, type = 'success') {
-  const container = document.querySelector('.toast-container');
-  if (!container) return;
-  
-  const icon = type === 'success' 
-    ? '<i class="fa-solid fa-circle-check text-success fs-4 me-2"></i>' 
-    : '<i class="fa-solid fa-circle-exclamation text-danger fs-4 me-2"></i>';
-  
-  const bg = type === 'success' ? 'rgba(40, 167, 69, 0.15)' : 'rgba(220, 53, 69, 0.15)';
-  const border = type === 'success' ? 'border-success' : 'border-danger';
-
-  const toastHtml = `
-    <div class="toast glass-card align-items-center ${border} mb-3 border border-opacity-25 shadow-lg" style="background: ${bg}; backdrop-filter: blur(15px);" role="alert" aria-live="assertive" aria-atomic="true">
-      <div class="d-flex p-1">
-        <div class="toast-body d-flex align-items-center fw-semibold text-light fs-6">
-          ${icon} ${message}
-        </div>
-        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-      </div>
-    </div>
-  `;
-  
-  container.insertAdjacentHTML('beforeend', toastHtml);
-  const toastEl = container.lastElementChild;
-  const toast = new bootstrap.Toast(toastEl, { delay: 3000 });
-  toast.show();
-  
-  toastEl.addEventListener('hidden.bs.toast', () => {
-    toastEl.remove();
-  });
-}

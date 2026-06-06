@@ -50,34 +50,7 @@ function showConfirm(message, callback) {
   if (confirmModal) confirmModal.show();
 }
 
-function showToast(message, type = 'success') {
-  const container = document.querySelector('.toast-container');
-  if (!container) return;
-  
-  const icon = type === 'success' 
-    ? '<i class="fa-solid fa-circle-check toast-success-icon me-2"></i>' 
-    : '<i class="fa-solid fa-circle-exclamation toast-error-icon me-2"></i>';
-  
-  const toastHtml = `
-    <div class="toast glass-toast align-items-center border-0 mb-2" role="alert" aria-live="assertive" aria-atomic="true">
-      <div class="d-flex">
-        <div class="toast-body d-flex align-items-center fw-medium">
-          ${icon} ${message}
-        </div>
-        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-      </div>
-    </div>
-  `;
-  
-  container.insertAdjacentHTML('beforeend', toastHtml);
-  const toastEl = container.lastElementChild;
-  const toast = new bootstrap.Toast(toastEl, { delay: 3000 });
-  toast.show();
-  
-  toastEl.addEventListener('hidden.bs.toast', () => {
-    toastEl.remove();
-  });
-}
+
 
 async function fetchReceptionists() {
   try {
@@ -89,10 +62,10 @@ async function fetchReceptionists() {
       receptionistsData = data.data.receptionists;
       renderReceptionists();
     } else {
-      showToast(data.message, 'danger');
+      showNotification(data.message, 'danger');
     }
   } catch (err) {
-    showToast('Error fetching receptionists', 'danger');
+    showNotification('Error fetching receptionists', 'danger');
   }
 }
 
@@ -104,17 +77,24 @@ function renderReceptionists() {
     const tr = document.createElement('tr');
     tr.id = `receptionist-row-${receptionist.id}`;
     const statusColor = receptionist.status === 'Active' ? 'text-success' : 'text-danger';
+    
+    // Fallback extraction
+    const fName = receptionist.User?.firstName || 'Unknown';
+    const lName = receptionist.User?.lastName || 'User';
+    const email = receptionist.User?.email || 'N/A';
+    const phone = receptionist.phoneNumber || 'N/A';
+    
     tr.innerHTML = `
       <td>
         <div class="d-flex align-items-center">
           <div class="avatar text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px; background: var(--secondary-gradient);">
-            ${receptionist.User.firstName.charAt(0)}
+            ${fName.charAt(0).toUpperCase()}
           </div>
-          <div class="fw-bold name-col">${receptionist.User.firstName} ${receptionist.User.lastName}</div>
+          <div class="fw-bold name-col">${fName} ${lName}</div>
         </div>
       </td>
-      <td style="color: var(--text-secondary);" class="email-col">${receptionist.User.email}</td>
-      <td class="phone-col">${receptionist.phoneNumber || 'N/A'}</td>
+      <td style="color: var(--text-secondary);" class="email-col">${email}</td>
+      <td class="phone-col">${phone}</td>
       <td class="shift-col">${receptionist.shift}</td>
       <td class="status-col fw-semibold ${statusColor}">${receptionist.status}</td>
       <td class="text-end">
@@ -157,7 +137,7 @@ async function createReceptionist() {
   };
 
   if (!payload.firstName || !payload.lastName || !payload.email || !payload.password || !payload.phoneNumber) {
-    showToast('Please fill all required fields.', 'danger');
+    showNotification('Please fill all required fields.', 'danger');
     return;
   }
 
@@ -174,17 +154,17 @@ async function createReceptionist() {
     const data = await res.json();
     if (res.ok || res.status === 201) {
       addReceptionistModalInstance.hide();
-      showToast('Successfully added receptionist!', 'success');
+      showNotification('Successfully added receptionist!', 'success');
       document.getElementById('addReceptionistForm').reset();
       
       const newRec = data.data.receptionist;
       receptionistsData.unshift(newRec);
       renderReceptionists();
     } else {
-      showToast(data.message || 'Error adding receptionist', 'danger');
+      showNotification(data.message || 'Error adding receptionist', 'danger');
     }
   } catch (err) {
-    showToast('Network error while adding receptionist', 'danger');
+    showNotification('Network error while adding receptionist', 'danger');
   }
 }
 
@@ -197,7 +177,7 @@ async function deleteReceptionist(id) {
       });
 
       if (res.ok || res.status === 204) {
-        showToast('Receptionist removed', 'success');
+        showNotification('Receptionist removed', 'success');
         
         const row = document.getElementById(`receptionist-row-${id}`);
         if (row) row.remove();
@@ -205,10 +185,10 @@ async function deleteReceptionist(id) {
         receptionistsData = receptionistsData.filter(r => r.id !== id);
       } else {
         const data = await res.json();
-        showToast(data.message, 'danger');
+        showNotification(data.message, 'danger');
       }
     } catch (err) {
-      showToast('Error deleting receptionist', 'danger');
+      showNotification('Error deleting receptionist', 'danger');
     }
   });
 }
@@ -258,7 +238,7 @@ async function updateReceptionist() {
     const data = await res.json();
     if (res.ok || res.status === 200) {
       editReceptionistModalInstance.hide();
-      showToast('Updated successfully', 'success');
+      showNotification('Updated successfully', 'success');
 
       // Update local data
       const updatedRec = data.data.receptionist;
@@ -287,9 +267,9 @@ async function updateReceptionist() {
         tr.querySelector('.avatar').textContent = updatedRec.User.firstName.charAt(0);
       }
     } else {
-      showToast(data.message || 'Error updating receptionist', 'danger');
+      showNotification(data.message || 'Error updating receptionist', 'danger');
     }
   } catch (err) {
-    showToast('Network error while updating receptionist', 'danger');
+    showNotification('Network error while updating receptionist', 'danger');
   }
 }
