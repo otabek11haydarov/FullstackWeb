@@ -1,6 +1,43 @@
 const { User } = require('../models');
 const bcrypt = require('bcryptjs');
 
+// Update Current User Profile
+exports.updateProfile = async (req, res) => {
+  try {
+    const user = await User.findByPk(req.user.id);
+    if (!user) {
+      return res.status(404).json({ status: 'fail', message: 'User not found' });
+    }
+
+    const updates = {};
+    
+    // Update email if provided
+    if (req.body.email) {
+      updates.email = req.body.email;
+    }
+
+    // Hash and update password if provided
+    if (req.body.password) {
+      updates.password = await bcrypt.hash(req.body.password, 10);
+    }
+
+    // Handle avatar upload if provided (mock logic for now)
+    if (req.body.avatar) {
+      updates.avatar = req.body.avatar;
+    }
+
+    await user.update(updates);
+    user.password = undefined; // Exclude from response
+
+    res.status(200).json({
+      status: 'success',
+      data: { user }
+    });
+  } catch (err) {
+    res.status(400).json({ status: 'fail', message: err.message });
+  }
+};
+
 // Get all users (Admins/Super Admins)
 exports.getAllUsers = async (req, res) => {
   try {

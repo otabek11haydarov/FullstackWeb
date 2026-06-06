@@ -25,6 +25,8 @@ document.addEventListener('DOMContentLoaded', () => {
   fetchMyPatients();
 });
 
+let allPatients = [];
+
 async function fetchMyPatients() {
   const container = document.getElementById('patientsContainer');
   try {
@@ -34,7 +36,8 @@ async function fetchMyPatients() {
     
     const data = await res.json();
     if (res.ok) {
-      renderPatients(data.data.patients);
+      allPatients = data.data.patients;
+      renderPatients(allPatients);
     } else {
       container.innerHTML = `<div class="col-12"><div class="alert alert-danger">${data.message}</div></div>`;
     }
@@ -43,12 +46,23 @@ async function fetchMyPatients() {
   }
 }
 
+// Live Search Listener
+document.getElementById('patientSearch')?.addEventListener('input', (e) => {
+  const term = e.target.value.toLowerCase();
+  const filtered = allPatients.filter(patient => {
+    const fn = (patient.User && patient.User.firstName) ? patient.User.firstName.toLowerCase() : '';
+    const ln = (patient.User && patient.User.lastName) ? patient.User.lastName.toLowerCase() : '';
+    return fn.includes(term) || ln.includes(term);
+  });
+  renderPatients(filtered);
+});
+
 function renderPatients(patients) {
   const container = document.getElementById('patientsContainer');
   container.innerHTML = '';
 
   if (patients.length === 0) {
-    container.innerHTML = '<div class="col-12"><p class="text-muted">No assigned patients found.</p></div>';
+    container.innerHTML = '<div class="col-12"><p class="text-white-50 text-center py-5">No patients found matching your search.</p></div>';
     return;
   }
 

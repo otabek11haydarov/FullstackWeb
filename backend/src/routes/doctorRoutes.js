@@ -13,6 +13,7 @@ router.get('/patients', roleMiddleware.restrictTo('Doctor', 'Super Admin'), doct
 router.get('/patients/:id/profile', roleMiddleware.restrictTo('Doctor', 'Super Admin'), doctorController.getPatientProfile);
 router.get('/diagnoses', roleMiddleware.restrictTo('Doctor', 'Super Admin'), doctorController.getDoctorDiagnoses);
 router.get('/appointments', roleMiddleware.restrictTo('Doctor', 'Super Admin'), doctorController.getDoctorAppointments);
+router.get('/reports/stats', roleMiddleware.restrictTo('Doctor', 'Super Admin'), doctorController.getReportsStats);
 
 
 router

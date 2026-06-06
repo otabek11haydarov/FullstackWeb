@@ -56,13 +56,14 @@ function renderTimeline(appointments) {
       contentHtml = `<div class="bg-secondary bg-opacity-25 p-3 rounded-3 flex-grow-1 text-center text-uppercase tracking-wider fw-bold">Lunch Break</div>`;
     } else {
       if (hourAppts.length === 0) {
-        contentHtml = `<div class="border border-secondary border-dashed p-3 rounded-3 flex-grow-1 text-muted">No appointments</div>`;
+        contentHtml = `<div class="border border-secondary border-dashed p-3 rounded-3 flex-grow-1 text-white-50">No appointments</div>`;
       } else {
         const apptsHtml = hourAppts.map(app => {
+          console.log("Appointment Data:", app);
           const patName = app.Patient && app.Patient.User ? `${app.Patient.User.firstName} ${app.Patient.User.lastName}` : 'Unknown';
-          const patientId = app.Patient ? app.Patient.id : '';
+          const correctPatientId = app.Patient?.id || app.patientId;
           return `
-            <a href="patient-profile.html?id=${patientId}" class="glass-card text-decoration-none text-white d-block p-3 rounded-3 flex-grow-1 border-start border-info border-4 mb-2">
+            <a href="patient-profile.html?id=${correctPatientId}" class="glass-card text-decoration-none text-white d-block p-3 rounded-3 flex-grow-1 border-start border-info border-4 mb-2">
               <h6 class="fw-bold mb-1">${patName}</h6>
               <p class="text-secondary mb-0 small">${app.reason || 'Routine Checkup'}</p>
             </a>

@@ -197,8 +197,8 @@ exports.getPatientHistory = async (req, res) => {
     }
 
     const [appointments, diagnoses] = await Promise.all([
-      Appointment.findAll({ where: { patientId }, order: [['date', 'DESC']] }),
-      Diagnosis.findAll({ where: { patientId }, order: [['createdAt', 'DESC']] })
+      Appointment.findAll({ where: { patientId, doctorId: req.user.role === 'Doctor' ? doctor.id : doctorId }, order: [['date', 'DESC']] }),
+      Diagnosis.findAll({ where: { patientId, doctorId: req.user.role === 'Doctor' ? doctor.id : doctorId }, order: [['createdAt', 'DESC']] })
     ]);
 
     res.status(200).json({
@@ -222,7 +222,7 @@ exports.getMyPatients = async (req, res) => {
       where: { doctorId: doctor.id },
       include: [
         { model: User, attributes: ['firstName', 'lastName', 'email'] },
-        { model: Diagnosis, attributes: ['id', 'condition', 'severity', 'createdAt'] }
+        { model: Diagnosis, attributes: ['id', 'condition', 'severity', 'createdAt'], where: { doctorId: doctor.id }, required: false }
       ],
       order: [['createdAt', 'DESC']]
     });
@@ -311,23 +311,34 @@ exports.getPatientProfile = async (req, res) => {
     const patientId = req.params.id;
     const userId = req.user.id;
     
-    // Allow Super Admin to view any patient, but if Doctor, must check ownership
-    let whereClause = { id: patientId };
+    let doctor = null;
+    
     if (req.user.role === 'Doctor') {
-      const doctor = await Doctor.findOne({ where: { userId } });
+      doctor = await Doctor.findOne({ where: { userId } });
       if (!doctor) {
         return res.status(404).json({ status: 'fail', message: 'Doctor profile not found.' });
       }
-      whereClause.doctorId = doctor.id;
+    }
+
+    console.log("--- DEBUGGING 404 ERROR ---");
+    console.log("Requested Patient ID:", patientId);
+    console.log("Current Doctor ID:", doctor ? doctor.id : 'N/A (Super Admin)');
+
+    const includeArray = [
+      { model: User, attributes: ['firstName', 'lastName', 'email'] }
+    ];
+
+    if (doctor) {
+      includeArray.push({ model: Diagnosis, attributes: ['id', 'condition', 'severity', 'prescription', 'createdAt'], where: { doctorId: doctor.id }, required: false });
+      includeArray.push({ model: Appointment, attributes: ['id', 'date', 'status', 'reason', 'notes'], where: { doctorId: doctor.id }, required: false });
+    } else {
+      includeArray.push({ model: Diagnosis, attributes: ['id', 'condition', 'severity', 'prescription', 'createdAt'] });
+      includeArray.push({ model: Appointment, attributes: ['id', 'date', 'status', 'reason', 'notes'] });
     }
 
     const patient = await Patient.findOne({
-      where: whereClause,
-      include: [
-        { model: User, attributes: ['firstName', 'lastName', 'email'] },
-        { model: Diagnosis, attributes: ['id', 'condition', 'severity', 'prescription', 'createdAt'] },
-        { model: Appointment, attributes: ['id', 'date', 'status', 'reason', 'notes'] }
-      ],
+      where: { id: patientId },
+      include: includeArray,
       order: [
         [Diagnosis, 'createdAt', 'DESC'],
         [Appointment, 'date', 'DESC']
@@ -335,7 +346,18 @@ exports.getPatientProfile = async (req, res) => {
     });
 
     if (!patient) {
-      return res.status(404).json({ status: 'fail', message: 'Patient not found or not assigned to you.' });
+      return res.status(404).json({ status: 'fail', message: 'Patient not found in the system.' });
+    }
+
+    // Check strict isolation permissions for Doctor
+    if (doctor) {
+      const isPrimaryDoctor = patient.doctorId === doctor.id;
+      // Check if there is an appointment history between them
+      const hasAppointment = await Appointment.findOne({ where: { doctorId: doctor.id, patientId: patient.id } });
+      
+      if (!isPrimaryDoctor && !hasAppointment) {
+        return res.status(403).json({ status: 'fail', message: 'Access denied: Patient not assigned to you and no appointment history exists.' });
+      }
     }
 
     res.status(200).json({
@@ -373,6 +395,79 @@ exports.getDoctorAppointments = async (req, res) => {
     res.status(200).json({
       status: 'success',
       data: { appointments }
+    });
+  } catch (err) {
+    res.status(400).json({ status: 'fail', message: err.message });
+  }
+};
+
+exports.getReportsStats = async (req, res) => {
+  try {
+    let doctorId = null;
+
+    if (req.user.role === 'Doctor') {
+      const doctor = await Doctor.findOne({ where: { userId: req.user.id } });
+      if (!doctor) {
+        return res.status(404).json({ status: 'fail', message: 'Doctor profile not found.' });
+      }
+      doctorId = doctor.id;
+    }
+
+    const whereClause = doctorId ? { doctorId } : {};
+
+    const totalPatients = await Patient.count({ where: whereClause });
+    const totalAppointments = await Appointment.count({ where: whereClause });
+    const totalDiagnoses = await Diagnosis.count({ where: whereClause });
+
+    const recentAppointments = await Appointment.findAll({
+      where: whereClause,
+      include: [{ model: Patient, include: [User] }],
+      order: [['createdAt', 'DESC']],
+      limit: 5
+    });
+
+    const recentDiagnoses = await Diagnosis.findAll({
+      where: whereClause,
+      include: [{ model: Patient, include: [User] }],
+      order: [['createdAt', 'DESC']],
+      limit: 5
+    });
+
+    const recentActivity = [];
+    recentAppointments.forEach(app => {
+      recentActivity.push({
+        type: 'Appointment',
+        date: app.createdAt,
+        description: `Appointment scheduled for patient ${app.Patient?.User?.firstName || 'Unknown'} ${app.Patient?.User?.lastName || ''}`
+      });
+    });
+
+    recentDiagnoses.forEach(diag => {
+      recentActivity.push({
+        type: 'Diagnosis',
+        date: diag.createdAt,
+        description: `Diagnosis "${diag.condition}" written for patient ${diag.Patient?.User?.firstName || 'Unknown'} ${diag.Patient?.User?.lastName || ''}`
+      });
+    });
+
+    recentActivity.sort((a, b) => new Date(b.date) - new Date(a.date));
+    const topRecentActivity = recentActivity.slice(0, 5);
+
+    const anonymousFeedback = [
+      { comment: "Dr. Smith is wonderful and very patient. I feel heard and understood.", rating: 5, date: "2023-10-25" },
+      { comment: "Great experience, took the time to explain everything thoroughly.", rating: 5, date: "2023-10-24" },
+      { comment: "Very professional and friendly staff. Highly recommend.", rating: 4, date: "2023-10-20" }
+    ];
+
+    res.status(200).json({
+      status: 'success',
+      data: {
+        totalPatients,
+        totalAppointments,
+        totalDiagnoses,
+        recentActivity: topRecentActivity,
+        anonymousFeedback
+      }
     });
   } catch (err) {
     res.status(400).json({ status: 'fail', message: err.message });

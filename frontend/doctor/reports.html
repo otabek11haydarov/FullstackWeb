@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CareTrack Clinic - Doctor Reports</title>
+  
+  <script src="../theme-init.js"></script>
+  
+  <link rel="icon" href="../assets/logo.png">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="../global.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="text-white min-vh-100 page-fade-in">
+
+  <div class="app-container">
+    
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="brand">
+        <img src="../assets/logo.png" alt="CareTrack Logo" style="width: 32px; height: 32px; border-radius: 8px;" class="me-2 shadow-sm">
+        <h5 class="mb-0 fw-bold">CareTrack Clinic</h5>
+      </div>
+
+      <nav>
+        <a href="dashboard.html" class="nav-item">
+          <i class="fa-solid fa-border-all"></i> Dashboard
+        </a>
+        <a href="my-patients.html" class="nav-item">
+          <i class="fa-regular fa-user"></i> My Patients
+        </a>
+        <a href="diagnoses.html" class="nav-item">
+          <i class="fa-solid fa-file-medical"></i> Diagnoses
+        </a>
+        <a href="my-schedule.html" class="nav-item">
+          <i class="fa-regular fa-calendar-days"></i> My Schedule
+        </a>
+        <a href="reports.html" class="nav-item active">
+          <i class="fa-regular fa-file-lines"></i> Reports
+        </a>
+      </nav>
+      
+      <div class="mt-auto">
+        <a href="#" id="logoutBtn" class="nav-item text-danger">
+          <i class="fa-solid fa-right-from-bracket"></i> Logout
+        </a>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      
+      <!-- Top Header -->
+      <header class="top-header d-flex justify-content-between align-items-center mb-4">
+        <div>
+          <h2 class="mb-0 fw-bold text-main">Reports & Statistics</h2>
+          <p class="text-muted mb-0">Overview of your clinic performance</p>
+        </div>
+        
+        <div class="header-actions d-flex align-items-center gap-3">
+          <button class="btn btn-outline-info rounded-pill px-4 fw-bold" onclick="window.print()">
+            <i class="fa-solid fa-download me-2"></i> Download Report
+          </button>
+          <div class="theme-switch-wrapper" onclick="toggleTheme()" title="Toggle Dark/Light Mode">
+            <div class="theme-switch">
+              <div class="theme-switch-toggle">
+                <i class="fa-solid fa-sun icon-sun"></i>
+                <i class="fa-solid fa-moon icon-moon"></i>
+              </div>
+            </div>
+          </div>
+          <div class="user-avatar" id="user-avatar"></div>
+        </div>
+      </header>
+
+      <!-- Top Stats Grid -->
+      <div class="row g-4 mt-2">
+        <div class="col-md-4">
+          <div class="glass-card p-4 text-center rounded-4 h-100 d-flex flex-column justify-content-center align-items-center">
+             <div class="icon-box mb-3 text-info fs-1">
+               <i class="fa-solid fa-hospital-user"></i>
+             </div>
+             <h5 class="text-white-50 fw-semibold">Total Patients</h5>
+             <h2 class="neon-text mb-0 fw-bold" id="totalPatientsCounter">
+               <div class="spinner-border text-info spinner-border-sm" role="status"></div>
+             </h2>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="glass-card p-4 text-center rounded-4 h-100 d-flex flex-column justify-content-center align-items-center">
+             <div class="icon-box mb-3 text-warning fs-1">
+               <i class="fa-solid fa-calendar-check"></i>
+             </div>
+             <h5 class="text-white-50 fw-semibold">Total Appointments</h5>
+             <h2 class="neon-text mb-0 fw-bold" id="totalAppointmentsCounter">
+               <div class="spinner-border text-warning spinner-border-sm" role="status"></div>
+             </h2>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="glass-card p-4 text-center rounded-4 h-100 d-flex flex-column justify-content-center align-items-center">
+             <div class="icon-box mb-3 text-success fs-1">
+               <i class="fa-solid fa-stethoscope"></i>
+             </div>
+             <h5 class="text-white-50 fw-semibold">Total Diagnoses</h5>
+             <h2 class="neon-text mb-0 fw-bold" id="totalDiagnosesCounter">
+               <div class="spinner-border text-success spinner-border-sm" role="status"></div>
+             </h2>
+          </div>
+        </div>
+      </div>
+
+      <!-- Feedback Layout -->
+      <div class="row mt-4 mb-4">
+        <!-- Anonymous Feedback Board -->
+        <div class="col-12">
+          <div class="glass-card p-4 rounded-4">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+              <h4 class="mb-0 fw-bold text-main"><i class="fa-solid fa-star text-info me-2"></i>Anonymous Feedback</h4>
+            </div>
+            <ul class="list-group list-group-flush bg-transparent" id="feedbackList">
+              <li class="list-group-item bg-transparent text-center py-4 text-white-50 border-0">
+                 <div class="spinner-border text-info" role="status"></div>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="../transitions.js"></script>
+  <script src="reports.js"></script>
+</body>
+</html>

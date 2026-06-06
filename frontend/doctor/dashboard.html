@@ -47,7 +47,7 @@
         <a href="my-schedule.html" class="nav-item">
           <i class="fa-regular fa-calendar-days"></i> My Schedule
         </a>
-        <a href="#" class="nav-item">
+        <a href="reports.html" class="nav-item">
           <i class="fa-regular fa-file-lines"></i> Reports
         </a>
       </nav>
@@ -67,20 +67,21 @@
           <h3 class="mb-1 fw-bold">Medical Record Management System</h3>
           <p style="color: rgba(255,255,255,0.6);">Doctor's Personal Dashboard</p>
         </div>
-        <div class="header-controls">
-          <!-- Theme Switcher -->
-          <div class="theme-switch-wrapper" style="margin-right: 15px;">
-            <label class="theme-switch" for="theme-checkbox">
-              <input type="checkbox" id="theme-checkbox" style="display:none;" />
+        <div class="header-controls d-flex align-items-center gap-3">
+          <!-- Global Theme Toggle -->
+          <div class="theme-switch-wrapper" id="global-theme-toggle" title="Toggle Dark/Light Mode">
+            <div class="theme-switch">
               <div class="theme-switch-toggle">
                 <i class="fa-solid fa-sun icon-sun"></i>
                 <i class="fa-solid fa-moon icon-moon"></i>
               </div>
-            </label>
+            </div>
           </div>
-          <div class="icon-btn"><i class="fa-regular fa-envelope"></i></div>
-          <div class="icon-btn"><i class="fa-regular fa-bell"></i></div>
-          <div class="user-avatar" id="user-avatar"></div>
+          
+          <!-- Interactive User Avatar Link -->
+          <a href="my-profile.html" class="text-decoration-none">
+            <div class="user-avatar" id="user-avatar" title="My Profile Settings"></div>
+          </a>
         </div>
       </div>
 
@@ -105,7 +106,7 @@
       <div class="middle-grid">
         <div class="glass-panel">
           <div class="d-flex justify-content-between align-items-center mb-3">
-            <h5 class="mb-0 fw-semibold">Work Schedule</h5>
+            <h5 class="mb-0 fw-semibold text-white">Work Schedule</h5>
             <div class="segmented-control" id="schedule-filter-control">
               <button class="seg-btn active" data-filter="upcoming">Upcoming</button>
               <button class="seg-btn" data-filter="completed">Completed</button>
@@ -120,47 +121,119 @@
             <div class="schedule-header">Thu</div>
             <div class="schedule-header">Fri</div>
 
-            <!-- Row 1 -->
+            <!-- Row 08:00 -->
+            <div class="schedule-row">
+              <div class="schedule-time">08:00</div>
+              <div class="schedule-cell" data-day="Mon" data-time="08:00"></div>
+              <div class="schedule-cell" data-day="Tue" data-time="08:00"></div>
+              <div class="schedule-cell" data-day="Wed" data-time="08:00"></div>
+              <div class="schedule-cell" data-day="Thu" data-time="08:00"></div>
+              <div class="schedule-cell" data-day="Fri" data-time="08:00"></div>
+            </div>
+            <!-- Row 09:00 -->
             <div class="schedule-row">
               <div class="schedule-time">09:00</div>
-              <div class="schedule-cell" id="cell-1-9"></div>
-              <div class="schedule-cell" id="cell-2-9"></div>
-              <div class="schedule-cell" id="cell-3-9"></div>
-              <div class="schedule-cell" id="cell-4-9"></div>
-              <div class="schedule-cell" id="cell-5-9"></div>
+              <div class="schedule-cell" data-day="Mon" data-time="09:00"></div>
+              <div class="schedule-cell" data-day="Tue" data-time="09:00"></div>
+              <div class="schedule-cell" data-day="Wed" data-time="09:00"></div>
+              <div class="schedule-cell" data-day="Thu" data-time="09:00"></div>
+              <div class="schedule-cell" data-day="Fri" data-time="09:00"></div>
             </div>
-            <!-- Row 2 -->
+            <!-- Row 10:00 -->
             <div class="schedule-row">
               <div class="schedule-time">10:00</div>
-              <div class="schedule-cell" id="cell-1-10"></div>
-              <div class="schedule-cell" id="cell-2-10"></div>
-              <div class="schedule-cell" id="cell-3-10"></div>
-              <div class="schedule-cell" id="cell-4-10"></div>
-              <div class="schedule-cell" id="cell-5-10"></div>
+              <div class="schedule-cell" data-day="Mon" data-time="10:00"></div>
+              <div class="schedule-cell" data-day="Tue" data-time="10:00"></div>
+              <div class="schedule-cell" data-day="Wed" data-time="10:00"></div>
+              <div class="schedule-cell" data-day="Thu" data-time="10:00"></div>
+              <div class="schedule-cell" data-day="Fri" data-time="10:00"></div>
             </div>
-            <!-- Row 3 -->
+            <!-- Row 11:00 -->
             <div class="schedule-row">
               <div class="schedule-time">11:00</div>
-              <div class="schedule-cell" id="cell-1-11"></div>
-              <div class="schedule-cell" id="cell-2-11"></div>
-              <div class="schedule-cell" id="cell-3-11"></div>
-              <div class="schedule-cell" id="cell-4-11"></div>
-              <div class="schedule-cell" id="cell-5-11"></div>
+              <div class="schedule-cell" data-day="Mon" data-time="11:00"></div>
+              <div class="schedule-cell" data-day="Tue" data-time="11:00"></div>
+              <div class="schedule-cell" data-day="Wed" data-time="11:00"></div>
+              <div class="schedule-cell" data-day="Thu" data-time="11:00"></div>
+              <div class="schedule-cell" data-day="Fri" data-time="11:00"></div>
             </div>
-            <!-- Row 4 -->
+            <!-- Row 13:00 -->
             <div class="schedule-row">
-              <div class="schedule-time">12:00</div>
-              <div class="schedule-cell" id="cell-1-12"></div>
-              <div class="schedule-cell" id="cell-2-12"></div>
-              <div class="schedule-cell" id="cell-3-12"></div>
-              <div class="schedule-cell" id="cell-4-12"></div>
-              <div class="schedule-cell" id="cell-5-12"></div>
+              <div class="schedule-time">13:00</div>
+              <div class="schedule-cell" data-day="Mon" data-time="13:00"></div>
+              <div class="schedule-cell" data-day="Tue" data-time="13:00"></div>
+              <div class="schedule-cell" data-day="Wed" data-time="13:00"></div>
+              <div class="schedule-cell" data-day="Thu" data-time="13:00"></div>
+              <div class="schedule-cell" data-day="Fri" data-time="13:00"></div>
+            </div>
+            <!-- Row 14:00 -->
+            <div class="schedule-row">
+              <div class="schedule-time">14:00</div>
+              <div class="schedule-cell" data-day="Mon" data-time="14:00"></div>
+              <div class="schedule-cell" data-day="Tue" data-time="14:00"></div>
+              <div class="schedule-cell" data-day="Wed" data-time="14:00"></div>
+              <div class="schedule-cell" data-day="Thu" data-time="14:00"></div>
+              <div class="schedule-cell" data-day="Fri" data-time="14:00"></div>
+            </div>
+            <!-- Row 15:00 -->
+            <div class="schedule-row">
+              <div class="schedule-time">15:00</div>
+              <div class="schedule-cell" data-day="Mon" data-time="15:00"></div>
+              <div class="schedule-cell" data-day="Tue" data-time="15:00"></div>
+              <div class="schedule-cell" data-day="Wed" data-time="15:00"></div>
+              <div class="schedule-cell" data-day="Thu" data-time="15:00"></div>
+              <div class="schedule-cell" data-day="Fri" data-time="15:00"></div>
+            </div>
+            <!-- Row 16:00 -->
+            <div class="schedule-row">
+              <div class="schedule-time">16:00</div>
+              <div class="schedule-cell" data-day="Mon" data-time="16:00"></div>
+              <div class="schedule-cell" data-day="Tue" data-time="16:00"></div>
+              <div class="schedule-cell" data-day="Wed" data-time="16:00"></div>
+              <div class="schedule-cell" data-day="Thu" data-time="16:00"></div>
+              <div class="schedule-cell" data-day="Fri" data-time="16:00"></div>
+            </div>
+            <!-- Row 17:00 -->
+            <div class="schedule-row">
+              <div class="schedule-time">17:00</div>
+              <div class="schedule-cell" data-day="Mon" data-time="17:00"></div>
+              <div class="schedule-cell" data-day="Tue" data-time="17:00"></div>
+              <div class="schedule-cell" data-day="Wed" data-time="17:00"></div>
+              <div class="schedule-cell" data-day="Thu" data-time="17:00"></div>
+              <div class="schedule-cell" data-day="Fri" data-time="17:00"></div>
+            </div>
+            <!-- Row 18:00 -->
+            <div class="schedule-row">
+              <div class="schedule-time">18:00</div>
+              <div class="schedule-cell" data-day="Mon" data-time="18:00"></div>
+              <div class="schedule-cell" data-day="Tue" data-time="18:00"></div>
+              <div class="schedule-cell" data-day="Wed" data-time="18:00"></div>
+              <div class="schedule-cell" data-day="Thu" data-time="18:00"></div>
+              <div class="schedule-cell" data-day="Fri" data-time="18:00"></div>
+            </div>
+            <!-- Row 19:00 -->
+            <div class="schedule-row">
+              <div class="schedule-time">19:00</div>
+              <div class="schedule-cell" data-day="Mon" data-time="19:00"></div>
+              <div class="schedule-cell" data-day="Tue" data-time="19:00"></div>
+              <div class="schedule-cell" data-day="Wed" data-time="19:00"></div>
+              <div class="schedule-cell" data-day="Thu" data-time="19:00"></div>
+              <div class="schedule-cell" data-day="Fri" data-time="19:00"></div>
+            </div>
+            <!-- Row 20:00 -->
+            <div class="schedule-row">
+              <div class="schedule-time">20:00</div>
+              <div class="schedule-cell" data-day="Mon" data-time="20:00"></div>
+              <div class="schedule-cell" data-day="Tue" data-time="20:00"></div>
+              <div class="schedule-cell" data-day="Wed" data-time="20:00"></div>
+              <div class="schedule-cell" data-day="Thu" data-time="20:00"></div>
+              <div class="schedule-cell" data-day="Fri" data-time="20:00"></div>
             </div>
           </div>
         </div>
 
         <div class="glass-panel">
-          <h5 class="fw-semibold mb-1">Anonymous Patient Feedback</h5>
+          <h5 class="fw-semibold mb-1 text-white">Anonymous Patient Feedback</h5>
           <p class="text-muted small mb-3">5 Ratings</p>
           
           <div class="d-flex gap-4" id="feedback-container">
@@ -179,14 +252,14 @@
       <!-- Bottom Section -->
       <div class="bottom-grid">
         <div>
-          <h5 class="fw-semibold mb-3">Patient Cards</h5>
+          <h5 class="fw-semibold mb-3 text-white">Patient Cards</h5>
           <div class="patient-cards-grid" id="patient-cards-grid">
             <!-- JS Injected -->
           </div>
         </div>
 
         <div>
-          <h5 class="fw-semibold mb-3">Upcoming Appointments</h5>
+          <h5 class="fw-semibold mb-3 text-white">Upcoming Appointments</h5>
           <div class="glass-panel p-0">
             <table class="table custom-table mb-0">
               <thead>
@@ -208,6 +281,6 @@
     </main>
   </div>
 
-  <script src="dashboard.js"></script>
+  <script src="dashboard.js?v=2.0"></script>
 </body>
 </html>

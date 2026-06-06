@@ -112,12 +112,9 @@ async function fetchDashboardData() {
 
 function renderSchedule(appointments, filter = 'upcoming') {
   // First clear all existing pills in case of re-render
-  for (let d = 1; d <= 5; d++) {
-    for (let h = 9; h <= 12; h++) {
-      const cell = document.getElementById(`cell-${d}-${h}`);
-      if (cell) cell.innerHTML = '';
-    }
-  }
+  document.querySelectorAll('.schedule-cell').forEach(cell => {
+    cell.innerHTML = '';
+  });
 
   if (!appointments || appointments.length === 0) return;
 
@@ -133,29 +130,29 @@ function renderSchedule(appointments, filter = 'upcoming') {
     return true;
   });
 
+  const daysMap = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
   filteredAppointments.forEach(appt => {
+    console.log("Appointment Data:", appt);
     const d = new Date(appt.date);
-    const day = d.getDay(); // 1=Mon, 5=Fri
-    const hour = d.getHours();
+    const dayName = daysMap[d.getDay()]; // e.g. 'Mon'
+    const hourStr = d.getHours().toString().padStart(2, '0') + ':00'; // e.g. '09:00'
 
-    // Only render if it falls in our 09:00-12:00 Mon-Fri grid
-    if (day >= 1 && day <= 5 && hour >= 9 && hour <= 12) {
-      const cell = document.getElementById(`cell-${day}-${hour}`);
-      if (cell) {
-        // Decide pill color dynamically
-        const isPurple = appt.reason && appt.reason.toLowerCase().includes('consultation');
-        const colorClass = isPurple ? 'purple' : 'cyan';
-        const width = Math.floor(Math.random() * 40 + 40); // Random width 40-80% for visual variety
-        
-        // Ensure overlaps stack if there are multiple appointments in the same slot
-        const existingPills = cell.querySelectorAll('.pill').length;
-        const topOffset = 50 + (existingPills * 15); // Shift down if overlapping
+    // Find the exact matching cell in the DOM
+    const cell = document.querySelector(`.schedule-cell[data-day="${dayName}"][data-time="${hourStr}"]`);
+    
+    if (cell) {
+      // Decide pill color dynamically
+      const isPurple = appt.reason && appt.reason.toLowerCase().includes('consultation');
+      const colorClass = isPurple ? 'purple' : 'cyan';
+      const width = Math.floor(Math.random() * 40 + 40); // Random width 40-80% for visual variety
+      
+      const existingPills = cell.querySelectorAll('.pill').length;
 
-        const patientId = appt.Patient ? appt.Patient.id : (appt.patientId || '');
-        const hoverBoxShadow = isPurple ? 'rgba(123, 47, 247, 0.5)' : 'rgba(0, 245, 255, 0.5)';
-        const pillHTML = `<a href="patient-profile.html?id=${patientId}" class="pill ${colorClass}" style="width: ${width}%; top: ${topOffset}%; transform: translateY(-50%); display: block; cursor: pointer; transition: transform 0.2s; box-shadow: 0 0 10px ${hoverBoxShadow};" title="View Patient Profile" onmouseover="this.style.transform='translateY(-50%) scale(1.05)'" onmouseout="this.style.transform='translateY(-50%) scale(1)'"></a>`;
-        cell.insertAdjacentHTML('beforeend', pillHTML);
-      }
+      const correctPatientId = appt.Patient?.id || appt.patientId;
+      const hoverBoxShadow = isPurple ? 'rgba(123, 47, 247, 0.5)' : 'rgba(0, 245, 255, 0.5)';
+      const pillHTML = `<a href="patient-profile.html?id=${correctPatientId}" class="pill ${colorClass} mb-2 d-block" style="width: ${width}%; cursor: pointer; transition: transform 0.2s; box-shadow: 0 0 10px ${hoverBoxShadow};" title="View Patient Profile" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'"></a>`;
+      cell.insertAdjacentHTML('beforeend', pillHTML);
     }
   });
 }
@@ -191,8 +188,8 @@ function renderFeedback(feedbacks) {
           <i class="fa-regular fa-user" style="font-size:0.6rem; color:var(--neon-cyan);"></i>
         </div>
         <div>
-          <p class="mb-0 fw-semibold" style="font-size:0.85rem;">Anonymous</p>
-          <p class="text-muted mb-0" style="font-size:0.75rem;">${fb.comment}</p>
+          <p class="mb-0 fw-semibold text-white" style="font-size:0.85rem;">Anonymous</p>
+          <p class="text-white-50 mb-0" style="font-size:0.75rem;">${fb.comment}</p>
         </div>
       </div>
     `;
@@ -205,7 +202,7 @@ function renderPatientCards(patients) {
   container.innerHTML = '';
   
   if (!patients || patients.length === 0) {
-    container.innerHTML = '<p class="text-muted">No assigned patients.</p>';
+    container.innerHTML = '<p class="text-white-50">No assigned patients.</p>';
     return;
   }
   
@@ -222,7 +219,7 @@ function renderPatientCards(patients) {
             ${initial}
           </div>
           <div>
-            <p class="text-muted mb-0" style="font-size:0.75rem;">Age</p>
+            <p class="text-white-50 mb-0" style="font-size:0.75rem;">Age</p>
             <h5 class="mb-0">${age}</h5>
           </div>
           <div class="ms-auto">
@@ -231,11 +228,11 @@ function renderPatientCards(patients) {
         </div>
         <div class="d-flex justify-content-between">
           <div>
-            <p class="text-muted mb-0" style="font-size:0.75rem;">Next scheduled</p>
+            <p class="text-white-50 mb-0" style="font-size:0.75rem;">Next scheduled</p>
             <p class="mb-0 fw-semibold" style="font-size:0.85rem;">Oct 28</p>
           </div>
           <div class="text-end">
-            <p class="text-muted mb-0" style="font-size:0.75rem;">Visit</p>
+            <p class="text-white-50 mb-0" style="font-size:0.75rem;">Visit</p>
             <p class="mb-0 fw-semibold" style="font-size:0.85rem;">Oct 28</p>
           </div>
         </div>
@@ -250,7 +247,7 @@ function renderUpcomingAppointments(appointments) {
   tbody.innerHTML = '';
   
   if (!appointments || appointments.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted">No appointments today.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="4" class="text-center text-white-50">No appointments today.</td></tr>';
     return;
   }
   

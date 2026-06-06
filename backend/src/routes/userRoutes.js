@@ -8,6 +8,9 @@ const router = express.Router();
 // Protect all routes
 router.use(authMiddleware.protect);
 
+// User profile route (accessible to all authenticated users)
+router.put('/profile', userController.updateProfile);
+
 // Only super_admin and admin can access these routes
 router.use(roleMiddleware.restrictTo('Super Admin', 'Admin'));
 

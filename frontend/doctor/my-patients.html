@@ -6,6 +6,7 @@
   <title>Medical Record Management System - My Patients</title>
   
   <script src="../theme-init.js"></script>
+  <script src="js/theme.js"></script>
   
   <link rel="icon" href="../assets/logo.png">
   <link rel="stylesheet" href="../global.css">
@@ -39,7 +40,7 @@
         <a href="my-schedule.html" class="nav-item">
           <i class="fa-regular fa-calendar-days"></i> My Schedule
         </a>
-        <a href="#" class="nav-item">
+        <a href="reports.html" class="nav-item">
           <i class="fa-regular fa-file-lines"></i> Reports
         </a>
       </nav>
@@ -59,8 +60,19 @@
           <h3 class="mb-1 fw-bold">My Patients</h3>
           <p style="color: rgba(255,255,255,0.6);">Directory of your assigned patients</p>
         </div>
-        <div class="header-controls">
-          <div class="icon-btn"><i class="fa-solid fa-search"></i></div>
+        <div class="header-controls d-flex gap-3 align-items-center">
+          <input type="text" id="patientSearch" class="form-control bg-transparent text-light border-secondary rounded-pill px-4" placeholder="Search patients by name..." style="min-width: 250px;">
+          
+          <!-- Global Theme Toggle -->
+          <div class="theme-switch-wrapper" id="global-theme-toggle" title="Toggle Dark/Light Mode">
+            <div class="theme-switch">
+              <div class="theme-switch-toggle">
+                <i class="fa-solid fa-sun"></i>
+                <i class="fa-solid fa-moon"></i>
+              </div>
+            </div>
+          </div>
+          
           <div class="user-avatar" id="user-avatar"></div>
         </div>
       </div>

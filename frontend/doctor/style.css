@@ -219,13 +219,10 @@
       position: relative;
     }
     .pill {
-      position: absolute;
-      top: 50%;
-      transform: translateY(-50%);
+      position: relative;
       height: 8px;
       border-radius: 4px;
-      width: 80%;
-      left: 10%;
+      margin: 4px auto;
     }
     .pill.cyan { background: var(--neon-cyan); box-shadow: 0 0 10px var(--neon-cyan); }
     .pill.purple { background: var(--neon-purple); box-shadow: 0 0 10px var(--neon-purple); }
