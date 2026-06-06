@@ -19,6 +19,9 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('submitAddPatientBtn').addEventListener('click', createPatient);
   document.getElementById('submitEditPatientBtn').addEventListener('click', updatePatient);
 
+  document.getElementById('searchPatient').addEventListener('input', applyFilters);
+  document.getElementById('filterDoctor').addEventListener('change', applyFilters);
+
   // Set Profile Footer
   document.getElementById('userNameDisplay').textContent = `${user.firstName} ${user.lastName}`;
   document.getElementById('userInitial').textContent = user.firstName.charAt(0).toUpperCase();
@@ -117,6 +120,11 @@ async function fetchDoctorsForDropdown() {
         option2.value = doc.id;
         option2.textContent = `Dr. ${doc.User.lastName} (${doc.specialization})`;
         editSelect.appendChild(option2);
+
+        const option3 = document.createElement('option');
+        option3.value = doc.id;
+        option3.textContent = `Dr. ${doc.User.firstName} ${doc.User.lastName}`;
+        document.getElementById('filterDoctor').appendChild(option3);
       });
     }
   } catch (err) {
@@ -131,11 +139,28 @@ function calculateAge(dobStr) {
   return Math.abs(ageDate.getUTCFullYear() - 1970);
 }
 
-function renderPatients() {
+function applyFilters() {
+  const searchQuery = document.getElementById('searchPatient').value.toLowerCase();
+  const selectedDocId = document.getElementById('filterDoctor').value;
+
+  const filtered = patientsData.filter(patient => {
+    const fullName = `${patient.User.firstName} ${patient.User.lastName}`.toLowerCase();
+    const email = patient.User.email.toLowerCase();
+    
+    const matchesSearch = fullName.includes(searchQuery) || email.includes(searchQuery);
+    const matchesDoc = selectedDocId === 'all' || String(patient.doctorId) === selectedDocId;
+
+    return matchesSearch && matchesDoc;
+  });
+
+  renderPatients(filtered);
+}
+
+function renderPatients(filteredArray = patientsData) {
   const tbody = document.getElementById('patientsTableBody');
   tbody.innerHTML = '';
 
-  patientsData.forEach(patient => {
+  filteredArray.forEach(patient => {
     const age = calculateAge(patient.dateOfBirth);
     const assignedDoc = patient.Doctor ? `Dr. ${patient.Doctor.User.firstName} ${patient.Doctor.User.lastName}` : '<span class="text-muted">Unassigned</span>';
     

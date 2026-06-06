@@ -15,6 +15,12 @@ exports.updateProfile = async (req, res) => {
     if (req.body.email) {
       updates.email = req.body.email;
     }
+    if (req.body.firstName) {
+      updates.firstName = req.body.firstName;
+    }
+    if (req.body.lastName) {
+      updates.lastName = req.body.lastName;
+    }
 
     // Hash and update password if provided
     if (req.body.password) {

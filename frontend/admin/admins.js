@@ -17,6 +17,7 @@ if (user.role !== 'Super Admin') {
 document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('userNameDisplay').textContent = `${user.firstName} ${user.lastName}`;
   document.getElementById('userInitial').textContent = user.firstName.charAt(0).toUpperCase();
+  document.getElementById('headerUserInitial').textContent = user.firstName.charAt(0).toUpperCase();
   document.getElementById('userRoleDisplay').textContent = 'Super Admin';
   
   // Setup logout

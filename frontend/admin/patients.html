@@ -55,6 +55,11 @@
             <i class="fa-solid fa-stethoscope"></i> Diagnoses
           </a>
         </li>
+        <li class="nav-item">
+          <a class="nav-link" href="appointments.html">
+            <i class="fa-regular fa-calendar-check"></i> Appointments
+          </a>
+        </li>
         <li class="nav-item mt-4">
           <a class="nav-link" href="#" id="logoutBtn">
             <i class="fa-solid fa-right-from-bracket text-danger"></i> <span class="text-danger">Logout</span>
@@ -82,9 +87,6 @@
       <header class="top-header d-flex justify-content-between align-items-center mb-4">
         <h2 class="mb-0 fw-bold" style="color: var(--text-primary);">Patients Directory</h2>
         <div class="header-actions d-flex align-items-center gap-3">
-          <button class="btn btn-primary-gradient rounded-pill px-4 fw-semibold shadow-sm" data-bs-toggle="modal" data-bs-target="#addPatientModal">
-            Add New Patient <i class="fa-solid fa-plus ms-1"></i>
-          </button>
           <div class="theme-switch-wrapper" onclick="toggleTheme()" title="Toggle Dark/Light Mode">
             <div class="theme-switch">
               <div class="theme-switch-toggle">
@@ -93,8 +95,31 @@
               </div>
             </div>
           </div>
+          
+          <a href="my-profile.html" class="text-light text-decoration-none d-flex align-items-center gap-2 custom-hover-effect">
+            <div class="rounded-circle d-flex justify-content-center align-items-center" style="width: 40px; height: 40px; background: linear-gradient(135deg, var(--neon-purple), var(--neon-cyan));">
+              <i class="fas fa-user text-white"></i>
+            </div>
+          </a>
         </div>
       </header>
+
+      <!-- Control Bar -->
+      <div class="row mb-4 g-3 align-items-center">
+        <div class="col-md-5">
+          <input type="text" id="searchPatient" class="form-control bg-transparent text-light border-secondary rounded-pill" placeholder="Search by name or email...">
+        </div>
+        <div class="col-md-4">
+          <select id="filterDoctor" class="form-select bg-transparent text-light border-secondary rounded-pill">
+            <option value="all">All Doctors</option>
+          </select>
+        </div>
+        <div class="col-md-3 text-end">
+          <button class="btn btn-primary-gradient rounded-pill px-4 fw-semibold shadow-sm" data-bs-toggle="modal" data-bs-target="#addPatientModal">
+            Add New Patient <i class="fa-solid fa-plus ms-1"></i>
+          </button>
+        </div>
+      </div>
 
       <!-- Glassmorphism Table -->
       <div class="glass-table table-responsive">

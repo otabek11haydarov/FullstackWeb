@@ -19,6 +19,9 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('submitAddDiagnosisBtn').addEventListener('click', createDiagnosis);
   document.getElementById('submitEditDiagnosisBtn').addEventListener('click', updateDiagnosis);
 
+  document.getElementById('searchDiagnosis').addEventListener('input', applyFilters);
+  document.getElementById('filterDiagDoctor').addEventListener('change', applyFilters);
+
   // Set Profile Footer
   document.getElementById('userNameDisplay').textContent = `${user.firstName} ${user.lastName}`;
   document.getElementById('userInitial').textContent = user.firstName.charAt(0).toUpperCase();
@@ -121,11 +124,14 @@ function populateDropdowns() {
 
   const addDocSel = document.getElementById('addDoctor');
   const editDocSel = document.getElementById('editDoctor');
+  const filterDiagDoctor = document.getElementById('filterDiagDoctor');
+  filterDiagDoctor.innerHTML = '<option value="all">All Doctors</option>';
 
   doctorsData.forEach(d => {
     const txt = `Dr. ${d.User.lastName} (${d.specialization})`;
     addDocSel.options.add(new Option(txt, d.id));
     editDocSel.options.add(new Option(txt, d.id));
+    filterDiagDoctor.options.add(new Option(`Dr. ${d.User.firstName} ${d.User.lastName}`, d.id));
   });
 }
 
@@ -138,11 +144,30 @@ function getSeverityBadge(severity) {
   }
 }
 
-function renderDiagnoses() {
+function applyFilters() {
+  const query = document.getElementById('searchDiagnosis').value.toLowerCase();
+  const docId = document.getElementById('filterDiagDoctor').value;
+
+  const filtered = diagnosesData.filter(diag => {
+    const pFirst = diag.Patient?.User?.firstName?.toLowerCase() || '';
+    const pLast = diag.Patient?.User?.lastName?.toLowerCase() || '';
+    const cond = diag.condition?.toLowerCase() || '';
+    const pres = diag.prescription?.toLowerCase() || '';
+
+    const matchesSearch = pFirst.includes(query) || pLast.includes(query) || cond.includes(query) || pres.includes(query);
+    const matchesDoc = docId === 'all' || String(diag.doctorId) === docId;
+
+    return matchesSearch && matchesDoc;
+  });
+
+  renderDiagnoses(filtered);
+}
+
+function renderDiagnoses(filteredArray = diagnosesData) {
   const tbody = document.getElementById('diagnosesTableBody');
   tbody.innerHTML = '';
 
-  diagnosesData.forEach(diagnosis => {
+  filteredArray.forEach(diagnosis => {
     const tr = document.createElement('tr');
     tr.id = `diagnosis-row-${diagnosis.id}`;
     

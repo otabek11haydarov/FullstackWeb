@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CareTrack Clinic - Emergency Appointments</title>
+  
+  <script src="../theme-init.js"></script>
+  <link rel="icon" href="../assets/logo.png">
+  <link rel="stylesheet" href="../global.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="glass-body">
+  <div class="app-container">
+    
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header d-flex align-items-center">
+        <img src="../assets/logo.png" alt="CareTrack Logo" style="width: 32px; height: 32px; border-radius: 8px;" class="me-2 shadow-sm">
+        <h4 class="mb-0 fw-bold">CareTrack Clinic</h4>
+      </div>
+      
+      <ul class="nav flex-column sidebar-nav mt-4">
+        <li class="nav-item"><a class="nav-link" href="index.html"><i class="fa-solid fa-border-all"></i> Dashboard</a></li>
+        <li class="nav-item" id="nav-admins-link"><a class="nav-link" href="admins.html"><i class="fa-solid fa-user-shield"></i> Admins</a></li>
+        <li class="nav-item"><a class="nav-link" href="doctors.html"><i class="fa-solid fa-user-doctor"></i> Doctors</a></li>
+        <li class="nav-item"><a class="nav-link" href="patients.html"><i class="fa-solid fa-users"></i> Patients</a></li>
+        <li class="nav-item"><a class="nav-link" href="receptionists.html"><i class="fa-solid fa-desktop"></i> Receptionists</a></li>
+        <li class="nav-item"><a class="nav-link" href="diagnoses.html"><i class="fa-solid fa-stethoscope"></i> Diagnoses</a></li>
+        <li class="nav-item"><a class="nav-link active" href="appointments.html"><i class="fa-regular fa-calendar-check"></i> Appointments</a></li>
+        <li class="nav-item mt-4"><a class="nav-link" href="#" id="logoutBtn"><i class="fa-solid fa-right-from-bracket text-danger"></i> <span class="text-danger">Logout</span></a></li>
+      </ul>
+
+      <div class="sidebar-footer mt-auto">
+        <div class="d-flex align-items-center">
+          <div class="avatar text-white rounded-circle d-flex align-items-center justify-content-center me-2" style="width: 40px; height: 40px; background: var(--primary-gradient);">
+            <span id="userInitial">U</span>
+          </div>
+          <div>
+            <div class="fw-bold fs-6 lh-1" id="userNameDisplay">User Name</div>
+            <small style="color: var(--text-muted);" id="userRoleDisplay">Role</small>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      
+      <!-- Top Header -->
+      <header class="top-header d-flex justify-content-between align-items-center mb-4">
+        <div>
+          <h2 class="mb-0 fw-bold text-danger"><i class="fa-solid fa-triangle-exclamation me-2"></i>Emergency Override</h2>
+          <p class="text-muted mb-0">Global Appointment Management</p>
+        </div>
+        
+        <div class="header-actions d-flex align-items-center gap-3">
+          <!-- Date Filter Bar -->
+          <div class="d-flex gap-2 align-items-center">
+            <input type="date" id="filterStart" class="form-control bg-transparent text-light border-secondary">
+            <span class="text-white-50">to</span>
+            <input type="date" id="filterEnd" class="form-control bg-transparent text-light border-secondary">
+            <button id="filterBtn" class="btn btn-outline-info">Fetch</button>
+          </div>
+          <div class="theme-switch-wrapper" onclick="toggleTheme()" title="Toggle Dark/Light Mode">
+            <div class="theme-switch">
+              <div class="theme-switch-toggle">
+                <i class="fa-solid fa-sun icon-sun"></i>
+                <i class="fa-solid fa-moon icon-moon"></i>
+              </div>
+            </div>
+          </div>
+          
+          <a href="my-profile.html" class="text-light text-decoration-none d-flex align-items-center gap-2 custom-hover-effect">
+            <div class="rounded-circle d-flex justify-content-center align-items-center" style="width: 40px; height: 40px; background: linear-gradient(135deg, var(--neon-purple), var(--neon-cyan));">
+              <i class="fas fa-user text-white"></i>
+            </div>
+          </a>
+        </div>
+      </header>
+
+      <!-- Control Bar -->
+      <div class="row mb-4 g-3 align-items-center">
+        <div class="col-md-4">
+          <input type="text" id="searchAppointment" class="form-control bg-transparent text-light border-secondary rounded-pill" placeholder="Search patient or reason...">
+        </div>
+        <div class="col-md-3">
+          <select id="filterApptDoctor" class="form-select bg-transparent text-light border-secondary rounded-pill">
+            <option value="all">All Doctors</option>
+          </select>
+        </div>
+        <div class="col-md-3">
+          <select id="filterApptStatus" class="form-select bg-transparent text-light border-secondary rounded-pill">
+            <option value="all">All Statuses</option>
+            <option value="Scheduled">Scheduled</option>
+            <option value="Completed">Completed</option>
+            <option value="Cancelled">Cancelled</option>
+            <option value="No Show">No Show</option>
+          </select>
+        </div>
+        <div class="col-md-2 text-end">
+          <button class="btn btn-danger fw-bold shadow-sm rounded-pill w-100" onclick="openModal()"><i class="fa-solid fa-plus me-2"></i>Add Override</button>
+        </div>
+      </div>
+
+      <!-- Data Grid -->
+      <div class="glass-card p-4 rounded-4 shadow-sm">
+        <div class="table-responsive">
+          <table class="table table-hover align-middle mb-0 custom-table">
+            <thead class="table-dark text-light border-bottom border-secondary">
+              <tr>
+                <th style="color: var(--text-muted);">Date & Time</th>
+                <th style="color: var(--text-muted);">Patient</th>
+                <th style="color: var(--text-muted);">Assigned Doctor</th>
+                <th style="color: var(--text-muted);">Status</th>
+                <th style="color: var(--text-muted);">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="appointmentsTableBody">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- CRUD Modal -->
+  <div class="modal fade" id="adminAppointmentModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content border-secondary text-light" style="background: var(--bg-card); backdrop-filter: blur(10px);">
+        <div class="modal-header border-secondary">
+          <h5 class="modal-title text-danger fw-bold" id="modalTitle">Override Appointment</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <form id="appointmentForm">
+            <input type="hidden" id="appointmentId">
+            <div class="mb-3">
+              <label class="form-label text-white-50">Patient</label>
+              <select class="form-select bg-transparent text-white border-secondary" id="patientSelect" required></select>
+            </div>
+            <div class="mb-3">
+              <label class="form-label text-white-50">Doctor</label>
+              <select class="form-select bg-transparent text-white border-secondary" id="doctorSelect" required></select>
+            </div>
+            <div class="mb-3">
+              <label class="form-label text-white-50">Date & Time</label>
+              <input type="datetime-local" class="form-control bg-transparent text-white border-secondary" id="appointmentDate" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label text-white-50">Status</label>
+              <select class="form-select bg-transparent text-white border-secondary" id="appointmentStatus">
+                <option value="Scheduled">Scheduled</option>
+                <option value="Completed">Completed</option>
+                <option value="Cancelled">Cancelled</option>
+                <option value="No Show">No Show</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label class="form-label text-white-50">Reason</label>
+              <input type="text" class="form-control bg-transparent text-white border-secondary" id="appointmentReason" required>
+            </div>
+            <button type="submit" class="btn btn-danger w-100 fw-bold">Execute Override</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="appointments.js"></script>
+</body>
+</html>

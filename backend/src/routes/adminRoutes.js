@@ -21,4 +21,19 @@ router
   .put(adminController.updateAdmin)
   .delete(adminController.deleteAdmin);
 
+// Emergency Appointments Override
+router
+  .route('/appointments')
+  .get(adminController.getAllAppointments)
+  .post(adminController.createAppointment);
+
+router
+  .route('/appointments/:id')
+  .put(adminController.updateAppointment)
+  .delete(adminController.deleteAppointment);
+
+// Dropdown Helper Routes
+router.route('/doctors').get(adminController.getAllDoctors);
+router.route('/patients').get(adminController.getAllPatients);
+
 module.exports = router;
