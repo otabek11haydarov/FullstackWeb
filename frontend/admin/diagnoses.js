@@ -81,7 +81,7 @@ async function fetchRelationalData() {
     populateDropdowns();
     renderDiagnoses();
   } catch (err) {
-    showNotification('Error loading directory data', 'danger');
+    window.showNotification('Error loading directory data', 'error');
   }
 }
 
@@ -197,7 +197,7 @@ async function createDiagnosis() {
   };
 
   if (!payload.patientId || !payload.doctorId || !payload.condition || !payload.date) {
-    showNotification('Please fill all required fields.', 'danger');
+    window.showNotification('Please fill all required fields.', 'error');
     return;
   }
 
@@ -214,17 +214,17 @@ async function createDiagnosis() {
     const data = await res.json();
     if (res.ok || res.status === 201) {
       addDiagnosisModalInstance.hide();
-      showNotification('Successfully added diagnosis!', 'success');
+      window.showNotification('Successfully added diagnosis!', 'success');
       document.getElementById('addDiagnosisForm').reset();
       
       const newDiag = data.data.diagnosis;
       diagnosesData.unshift(newDiag);
       renderDiagnoses(); // Re-render to ensure top placement and correct event listeners
     } else {
-      showNotification(data.message || 'Error adding diagnosis', 'danger');
+      window.showNotification(data.message || 'Error adding diagnosis', 'error');
     }
   } catch (err) {
-    showNotification('Network error while adding diagnosis', 'danger');
+    window.showNotification('Network error while adding diagnosis', 'error');
   }
 }
 
@@ -237,7 +237,7 @@ async function deleteDiagnosis(id) {
       });
 
       if (res.ok || res.status === 204) {
-        showNotification('Diagnosis deleted', 'success');
+        window.showNotification('Diagnosis deleted', 'success');
         
         const row = document.getElementById(`diagnosis-row-${id}`);
         if (row) row.remove();
@@ -245,10 +245,10 @@ async function deleteDiagnosis(id) {
         diagnosesData = diagnosesData.filter(d => d.id !== id);
       } else {
         const data = await res.json();
-        showNotification(data.message, 'danger');
+        window.showNotification(data.message, 'error');
       }
     } catch (err) {
-      showNotification('Error deleting diagnosis', 'danger');
+      window.showNotification('Error deleting diagnosis', 'error');
     }
   });
 }
@@ -309,7 +309,7 @@ async function updateDiagnosis() {
     const data = await res.json();
     if (res.ok || res.status === 200) {
       editDiagnosisModalInstance.hide();
-      showNotification('Diagnosis updated successfully', 'success');
+      window.showNotification('Diagnosis updated successfully', 'success');
 
       // Update local data
       const updatedDiag = data.data.diagnosis;
@@ -331,9 +331,9 @@ async function updateDiagnosis() {
         tr.querySelector('.date-col').textContent = updatedDiag.date;
       }
     } else {
-      showNotification(data.message || 'Error updating diagnosis', 'danger');
+      window.showNotification(data.message || 'Error updating diagnosis', 'error');
     }
   } catch (err) {
-    showNotification('Network error while updating diagnosis', 'danger');
+    window.showNotification('Network error while updating diagnosis', 'error');
   }
 }

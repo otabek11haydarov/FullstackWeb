@@ -8,6 +8,9 @@ if (!token || !userStr) {
 
 const user = JSON.parse(userStr);
 
+let currentDate = new Date();
+let allAppointments = [];
+
 document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('logoutBtn').addEventListener('click', (e) => {
     e.preventDefault();
@@ -16,8 +19,37 @@ document.addEventListener('DOMContentLoaded', () => {
     window.location.href = '../auth/login.html';
   });
 
+  const datePicker = document.getElementById('scheduleDatePicker');
+  if (datePicker) {
+    datePicker.value = currentDate.toISOString().split('T')[0];
+    datePicker.addEventListener('change', (e) => {
+      currentDate = new Date(e.target.value);
+      updateDateDisplay();
+      renderTimeline(allAppointments);
+    });
+  }
+  updateDateDisplay();
+
   fetchAndRenderSchedule();
 });
+
+window.changeDate = function(offset) {
+  currentDate.setDate(currentDate.getDate() + offset);
+  const datePicker = document.getElementById('scheduleDatePicker');
+  if (datePicker) {
+    datePicker.value = currentDate.toISOString().split('T')[0];
+  }
+  updateDateDisplay();
+  renderTimeline(allAppointments);
+};
+
+function updateDateDisplay() {
+  const display = document.getElementById('currentDateDisplay');
+  if (display) {
+    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    display.textContent = currentDate.toLocaleDateString(undefined, options);
+  }
+}
 
 async function fetchAndRenderSchedule() {
   try {
@@ -26,25 +58,32 @@ async function fetchAndRenderSchedule() {
     });
     const data = await res.json();
     if (res.ok) {
-      renderTimeline(data.data.appointments);
+      allAppointments = data.data.appointments;
+      renderTimeline(allAppointments);
     } else {
-      showNotification(data.message || 'Error fetching appointments', 'error');
+      window.showNotification(data.message || 'Error fetching appointments', 'error');
     }
   } catch (err) {
-    showNotification('Failed to connect to server', 'error');
+    window.showNotification('Failed to connect to server', 'error');
   }
 }
 
 function renderTimeline(appointments) {
-  const container = document.getElementById('timelineContainer');
+  const container = document.getElementById('dailyTimeline');
   container.innerHTML = '';
   
+  const targetDateStr = currentDate.toISOString().split('T')[0];
+
+  const todaysAppts = appointments.filter(app => {
+    return app.date && app.date.startsWith(targetDateStr);
+  });
+
   // Working hours 08:00 to 20:00
   for (let hour = 8; hour <= 20; hour++) {
     const timeLabel = `${hour.toString().padStart(2, '0')}:00`;
     
     // Group appointments that fall into this hour
-    const hourAppts = appointments.filter(app => {
+    const hourAppts = todaysAppts.filter(app => {
       const appHour = new Date(app.date).getHours();
       return appHour === hour;
     });

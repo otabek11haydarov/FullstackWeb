@@ -91,9 +91,7 @@ async function fetchAnalytics() {
       
       initCharts(departments, genders, severities);
     }
-  } catch (error) {
-    console.error('Error fetching analytics:', error);
-  }
+  } catch(error) { console.error(error); window.showNotification("An error occurred. Please try again.", "error"); }
 }
 
 function initCharts(departments, genders, severities) {
@@ -234,9 +232,7 @@ async function fetchStats() {
         });
       }
     }
-  } catch (error) {
-    console.error('Error fetching dashboard stats:', error);
-  }
+  } catch(error) { console.error(error); window.showNotification("An error occurred. Please try again.", "error"); }
 }
 
 document.addEventListener('DOMContentLoaded', initDashboard);

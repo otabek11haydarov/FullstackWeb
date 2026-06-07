@@ -66,7 +66,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const data = await res.json();
       
       if (res.ok) {
-        showNotification('Profile Updated Successfully!', 'success');
+        window.showNotification('Profile Updated Successfully!', 'success');
         
         // Update local storage
         user.firstName = data.data.user.firstName;
@@ -85,15 +85,15 @@ document.addEventListener('DOMContentLoaded', () => {
         
         if (newPassword.trim() !== '') {
            setTimeout(() => {
-             showNotification('Password changed. Please log in again.');
+             window.showNotification('Password changed. Please log in again.');
              document.getElementById('logoutBtn').click();
            }, 1500);
         }
       } else {
-        showNotification(data.message || 'Error updating profile', 'danger');
+        window.showNotification(data.message || 'Error updating profile', 'error');
       }
     } catch (err) {
-      showNotification('Network error while updating profile', 'danger');
+      window.showNotification('Network error while updating profile', 'error');
     } finally {
       submitBtn.innerHTML = 'Save Changes <i class="fa-solid fa-save ms-2"></i>';
       submitBtn.disabled = false;

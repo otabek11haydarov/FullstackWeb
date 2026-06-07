@@ -65,9 +65,7 @@ async function loadAppointments() {
     } else {
       console.error(data.message);
     }
-  } catch (err) {
-    console.error("Failed to fetch appointments:", err);
-  }
+  } catch(err) { console.error(err); window.showNotification("An error occurred. Please try again.", "error"); }
 }
 
 function applyFilters() {
@@ -154,9 +152,7 @@ async function populateDropdowns() {
         patSelect.innerHTML += `<option value="${pat.id}">${pat.User.firstName} ${pat.User.lastName}</option>`;
       });
     }
-  } catch (err) {
-    console.error("Failed to fetch dropdown data:", err);
-  }
+  } catch(err) { console.error(err); window.showNotification("An error occurred. Please try again.", "error"); }
 }
 
 // Modal Actions
@@ -210,11 +206,11 @@ async function handleFormSubmit(e) {
       loadAppointments(); // Instantly refresh
     } else {
       const errorData = await res.json();
-      showNotification("Error: " + errorData.message);
+      window.showNotification("Error: " + errorData.message);
     }
   } catch (err) {
     console.error("Failed to submit appointment:", err);
-    showNotification("System error saving appointment.");
+    window.showNotification("System error saving appointment.");
   }
 }
 
@@ -232,9 +228,7 @@ window.deleteAppointment = async function(id) {
       loadAppointments(); // Instantly refresh
     } else {
       const errorData = await res.json();
-      showNotification("Error deleting: " + errorData.message);
+      window.showNotification("Error deleting: " + errorData.message);
     }
-  } catch (err) {
-    console.error("Failed to delete appointment:", err);
-  }
+  } catch(err) { console.error(err); window.showNotification("An error occurred. Please try again.", "error"); }
 }

@@ -62,10 +62,10 @@ async function fetchReceptionists() {
       receptionistsData = data.data.receptionists;
       renderReceptionists();
     } else {
-      showNotification(data.message, 'danger');
+      window.showNotification(data.message, 'error');
     }
   } catch (err) {
-    showNotification('Error fetching receptionists', 'danger');
+    window.showNotification('Error fetching receptionists', 'error');
   }
 }
 
@@ -137,7 +137,7 @@ async function createReceptionist() {
   };
 
   if (!payload.firstName || !payload.lastName || !payload.email || !payload.password || !payload.phoneNumber) {
-    showNotification('Please fill all required fields.', 'danger');
+    window.showNotification('Please fill all required fields.', 'error');
     return;
   }
 
@@ -154,17 +154,17 @@ async function createReceptionist() {
     const data = await res.json();
     if (res.ok || res.status === 201) {
       addReceptionistModalInstance.hide();
-      showNotification('Successfully added receptionist!', 'success');
+      window.showNotification('Successfully added receptionist!', 'success');
       document.getElementById('addReceptionistForm').reset();
       
       const newRec = data.data.receptionist;
       receptionistsData.unshift(newRec);
       renderReceptionists();
     } else {
-      showNotification(data.message || 'Error adding receptionist', 'danger');
+      window.showNotification(data.message || 'Error adding receptionist', 'error');
     }
   } catch (err) {
-    showNotification('Network error while adding receptionist', 'danger');
+    window.showNotification('Network error while adding receptionist', 'error');
   }
 }
 
@@ -177,7 +177,7 @@ async function deleteReceptionist(id) {
       });
 
       if (res.ok || res.status === 204) {
-        showNotification('Receptionist removed', 'success');
+        window.showNotification('Receptionist removed', 'success');
         
         const row = document.getElementById(`receptionist-row-${id}`);
         if (row) row.remove();
@@ -185,10 +185,10 @@ async function deleteReceptionist(id) {
         receptionistsData = receptionistsData.filter(r => r.id !== id);
       } else {
         const data = await res.json();
-        showNotification(data.message, 'danger');
+        window.showNotification(data.message, 'error');
       }
     } catch (err) {
-      showNotification('Error deleting receptionist', 'danger');
+      window.showNotification('Error deleting receptionist', 'error');
     }
   });
 }
@@ -238,7 +238,7 @@ async function updateReceptionist() {
     const data = await res.json();
     if (res.ok || res.status === 200) {
       editReceptionistModalInstance.hide();
-      showNotification('Updated successfully', 'success');
+      window.showNotification('Updated successfully', 'success');
 
       // Update local data
       const updatedRec = data.data.receptionist;
@@ -267,9 +267,9 @@ async function updateReceptionist() {
         tr.querySelector('.avatar').textContent = updatedRec.User.firstName.charAt(0);
       }
     } else {
-      showNotification(data.message || 'Error updating receptionist', 'danger');
+      window.showNotification(data.message || 'Error updating receptionist', 'error');
     }
   } catch (err) {
-    showNotification('Network error while updating receptionist', 'danger');
+    window.showNotification('Network error while updating receptionist', 'error');
   }
 }

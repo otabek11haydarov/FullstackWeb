@@ -55,9 +55,7 @@ function syncReceptionistProfile() {
     if (initEl && user.firstName) {
       initEl.textContent = user.firstName.charAt(0).toUpperCase();
     }
-  } catch (err) {
-    console.error("Error parsing user data:", err);
-  }
+  } catch(err) { console.error(err); window.showNotification("An error occurred. Please try again.", "error"); }
 }
 
 function checkShiftHours(shift) {
@@ -115,9 +113,7 @@ async function fetchDoctors() {
         if(select2) select2.insertAdjacentHTML('beforeend', option);
       });
     }
-  } catch (err) {
-    console.error("Error fetching doctors", err);
-  }
+  } catch(err) { console.error(err); window.showNotification("An error occurred. Please try again.", "error"); }
 }
 
 async function fetchPatients() {
@@ -131,9 +127,7 @@ async function fetchPatients() {
       allPatients = data.data.patients;
       renderPatients(allPatients);
     }
-  } catch (err) {
-    console.error("Error fetching patients", err);
-  }
+  } catch(err) { console.error(err); window.showNotification("An error occurred. Please try again.", "error"); }
 }
 
 function applyFilters() {
@@ -269,11 +263,9 @@ async function savePatient(e) {
       modalInstance.hide();
       await fetchPatients();
     } else {
-      showNotification(data.message || 'Error saving patient');
+      window.showNotification(data.message || 'Error saving patient');
     }
-  } catch (err) {
-    console.error('Submit error:', err);
-  }
+  } catch(err) { console.error(err); window.showNotification("An error occurred. Please try again.", "error"); }
 }
 
 window.editPatient = (id) => {
@@ -313,7 +305,7 @@ window.deletePatient = async (id, btn) => {
     });
 
     if (res.ok) {
-      showNotification('Patient deleted successfully', 'success');
+      window.showNotification('Patient deleted successfully', 'success');
       
       // Smooth DOM removal without page reload
       if (btn) {
@@ -327,10 +319,10 @@ window.deletePatient = async (id, btn) => {
       }
     } else {
       const data = await res.json();
-      showNotification(data.message || 'Error deleting patient', 'error');
+      window.showNotification(data.message || 'Error deleting patient', 'error');
     }
   } catch (err) {
     console.error('Delete error:', err);
-    showNotification('Network error while deleting', 'error');
+    window.showNotification('Network error while deleting', 'error');
   }
 };

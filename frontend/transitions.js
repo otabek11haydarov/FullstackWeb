@@ -29,42 +29,33 @@ document.addEventListener('DOMContentLoaded', () => {
  * @param {string} message - The message to display
  * @param {string} type - 'info', 'success', 'error'
  */
-// Global Notification Helper
 window.showNotification = function(message, type = 'success') {
-    // Dynamic Gradient Backgrounds
-    const bgColors = {
-        success: 'linear-gradient(135deg, #00b09b, #96c93d)',
-        error: 'linear-gradient(135deg, #ff416c, #ff4b2b)',
-        info: 'linear-gradient(135deg, #7b2ff7, #0dcaf0)'
-    };
-    
-    // Dynamic FontAwesome Icons
+    if (typeof Toastify === 'undefined') {
+        console.error("Toastify is missing!");
+        return alert(message);
+    }
+
     const icons = {
-        success: '<i class="fa-solid fa-circle-check fs-5"></i>',
-        error: '<i class="fa-solid fa-triangle-exclamation fs-5"></i>',
-        info: '<i class="fa-solid fa-circle-info fs-5"></i>'
+        success: '<i class="fas fa-check-circle fs-4"></i>',
+        error: '<i class="fas fa-times-circle fs-4"></i>',
+        info: '<i class="fas fa-info-circle fs-4"></i>'
     };
 
     Toastify({
-        text: `<div class="d-flex align-items-center gap-3">${icons[type]} <span style="font-size: 15px;">${message}</span></div>`,
-        duration: 3000, // 3 seconds timing
-        newWindow: true,
+        // The inline styles here prevent the close button from overlapping the text
+        text: `
+            <div style="display: flex; align-items: center; gap: 12px; padding-right: 25px;">
+                ${icons[type]} 
+                <span style="font-size: 15px; letter-spacing: 0.5px;">${message}</span>
+            </div>
+        `,
+        duration: 3000,
         close: true,
-        gravity: "top", 
-        position: "right", 
-        stopOnFocus: true, 
+        gravity: "top", // top or bottom
+        position: "center", // ENFORCES CENTER ALIGNMENT
+        stopOnFocus: true, // Prevents dismissing of toast on hover
         escapeMarkup: false, // Allows HTML inside text
-        style: {
-            background: bgColors[type],
-            borderRadius: "12px",
-            padding: "16px 24px",
-            color: "#ffffff",
-            boxShadow: "0 10px 30px rgba(0,0,0,0.3)",
-            fontWeight: "500",
-            letterSpacing: "0.5px",
-            transform: "translateY(10px)" // Starting position for animation
-        },
-        className: "premium-toast"
+        className: `premium-toast toast-${type}` // Triggers our custom CSS and colors
     }).showToast();
 };
 
@@ -125,14 +116,16 @@ document.addEventListener('DOMContentLoaded', initializeGlobalAvatar);
 
 window.logout = function() {
     localStorage.clear();
-    // Assuming auth pages are in 'auth' folder
-    // Calculate relative path to auth folder or just use absolute if needed.
-    // For simplicity, redirect to '/frontend/auth/login.html' or relative '../auth/login.html' depending on where we are.
-    // Let's check current path
-    const path = window.location.pathname;
-    if (path.includes('/admin/') || path.includes('/doctor/') || path.includes('/receptionist/')) {
-        window.location.href = '../auth/login.html';
-    } else {
-        window.location.href = 'auth/login.html';
+    if (typeof window.showNotification === 'function') {
+        window.showNotification("You have been logged out.", "info");
     }
+    
+    setTimeout(() => {
+        const path = window.location.pathname;
+        if (path.includes('/admin/') || path.includes('/doctor/') || path.includes('/receptionist/')) {
+            window.location.href = '../auth/login.html';
+        } else {
+            window.location.href = 'auth/login.html';
+        }
+    }, 1000); // Allow time for toast to show
 };

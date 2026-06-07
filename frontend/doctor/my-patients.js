@@ -68,6 +68,9 @@ function renderPatients(patients) {
   patients.forEach(patient => {
     const name = `${patient.User.firstName} ${patient.User.lastName}`;
     const initial = patient.User.firstName.charAt(0).toUpperCase();
+
+    const patientName = patient.User ? patient.User.firstName : (patient.firstName || 'Patient');
+    const avatarUrl = `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(patientName)}&backgroundColor=f7971e&textColor=ffffff&fontWeight=700`;
     
     // Render Diagnoses tags
     let diagnosesHtml = '<p class="text-muted" style="font-size: 0.85rem; margin-bottom: 5px;">No active diagnoses</p>';
@@ -82,7 +85,9 @@ function renderPatients(patients) {
       <div class="col-md-6 col-lg-4">
         <div class="glass-card p-4 rounded-4 h-100 d-flex flex-column border border-info border-opacity-25 bg-dark bg-opacity-50">
           <div class="d-flex align-items-center mb-3">
-            <div class="patient-avatar-lg me-3 rounded-circle bg-primary bg-gradient d-flex justify-content-center align-items-center text-white fw-bold fs-4">${initial}</div>
+            <div class="global-avatar-wrapper me-3">
+              <img src="${avatarUrl}" alt="Avatar">
+            </div>
             <div>
               <h5 class="mb-1 fw-bold text-white">${name}</h5>
               <div class="text-white-50 small"><i class="fa-regular fa-calendar me-1"></i> DOB: ${new Date(patient.dateOfBirth).toLocaleDateString()}</div>

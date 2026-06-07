@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const urlParams = new URLSearchParams(window.location.search);
   patientId = urlParams.get('id');
   if (!patientId) {
-    showNotification('No patient selected.');
+    window.showNotification('No patient selected.');
     window.location.href = 'my-patients.html';
     return;
   }
@@ -40,7 +40,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       
       const patId = document.getElementById('diagnosisPatientId').value;
       if (!patId) {
-          showNotification("No patient selected."); 
+          window.showNotification("No patient selected."); 
           return;
       }
       
@@ -63,25 +63,25 @@ document.addEventListener('DOMContentLoaded', async () => {
         
         const data = await res.json();
         if (res.ok || res.status === 201) {
-          showNotification('Diagnosis added successfully!', 'success');
+          window.showNotification('Diagnosis added successfully!', 'success');
           diagForm.reset();
         } else {
-          showNotification(data.message || 'Error adding diagnosis', 'error');
+          window.showNotification(data.message || 'Error adding diagnosis', 'error');
         }
       } catch (err) {
-        showNotification('Network error while adding diagnosis', 'error');
+        window.showNotification('Network error while adding diagnosis', 'error');
       }
     });
   }
 
   // Appointment Actions
   document.getElementById('btnMarkCompleted')?.addEventListener('click', async () => {
-    if (!activeAppointmentId) return showNotification('No active appointment to manage.');
+    if (!activeAppointmentId) return window.showNotification('No active appointment to manage.');
     await updateAppointmentStatus(activeAppointmentId, 'Completed');
   });
   
   document.getElementById('btnSendToDiagnostics')?.addEventListener('click', async () => {
-    if (!activeAppointmentId) return showNotification('No active appointment to manage.');
+    if (!activeAppointmentId) return window.showNotification('No active appointment to manage.');
     await updateAppointmentStatus(activeAppointmentId, 'Pending');
   });
 
@@ -93,13 +93,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         body: JSON.stringify({ status })
       });
       if (res.ok) {
-        showNotification(`Appointment marked as ${status}`, 'success');
+        window.showNotification(`Appointment marked as ${status}`, 'success');
         setTimeout(() => location.reload(), 1500);
       } else {
-        showNotification('Failed to update status', 'error');
+        window.showNotification('Failed to update status', 'error');
       }
     } catch(err) {
-      showNotification('Network error', 'error');
+      window.showNotification('Network error', 'error');
     }
   }
 
@@ -121,7 +121,7 @@ document.addEventListener('DOMContentLoaded', async () => {
           }
         });
       }
-    } catch(err) { console.error('Failed to load doctors'); }
+    } catch(err) { console.error(err); window.showNotification("An error occurred. Please try again.", "error"); }
   }
 
   // Load Clinical History
@@ -172,9 +172,7 @@ document.addEventListener('DOMContentLoaded', async () => {
           `;
         });
       }
-    } catch(err) {
-      console.error(err);
-    }
+    } catch(err) { console.error(err); window.showNotification("An error occurred. Please try again.", "error"); }
   }
 
   await loadDoctors();
@@ -187,7 +185,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       e.preventDefault();
       const newDoctorId = document.getElementById('referDoctorSelect').value;
       const reason = document.getElementById('referReason').value;
-      if (!newDoctorId || !reason) return showNotification('Please fill in all fields.');
+      if (!newDoctorId || !reason) return window.showNotification('Please fill in all fields.');
 
       try {
         const res = await fetch(`${API_URL}/doctor/patients/${patientId}/refer`, {
@@ -196,55 +194,115 @@ document.addEventListener('DOMContentLoaded', async () => {
           body: JSON.stringify({ newDoctorId, reason })
         });
         if (res.ok) {
-          showNotification('Patient referred successfully', 'success');
+          window.showNotification('Patient referred successfully', 'success');
           setTimeout(() => window.location.href = 'my-patients.html', 1500);
         } else {
-          showNotification('Failed to refer patient', 'error');
+          window.showNotification('Failed to refer patient', 'error');
         }
-      } catch(err) { showNotification('Network error', 'error'); }
+      } catch(err) { window.showNotification('Network error', 'error'); }
     });
   }
 
   // PDF Download
   document.getElementById('btnDownloadPDF')?.addEventListener('click', async () => {
     try {
-      const res = await fetch(`${API_URL}/doctor/patients/${patientId}/clinical-history`, {
+      const resPat = await fetch(`${API_URL}/doctor/patients/${patientId}/profile`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error();
+      const patData = await resPat.json();
+      if (!resPat.ok) throw new Error(patData.message || 'Error loading patient');
+      const patient = patData.data.patient;
 
-      const ledgerDiv = document.getElementById('pdfLedgerList');
-      ledgerDiv.innerHTML = '';
-      
-      document.getElementById('pdfPatientInfo').innerHTML = `
-        <strong>Patient Name:</strong> ${document.getElementById('patName').textContent} <br>
-        <strong>DOB:</strong> ${document.getElementById('patDob').textContent} <br>
-        <strong>Date Generated:</strong> ${new Date().toLocaleDateString()}
-      `;
+      // Calculate age dynamically
+      const dob = new Date(patient.dateOfBirth);
+      const ageDiffMs = Date.now() - dob.getTime();
+      const ageDate = new Date(ageDiffMs);
+      const age = Math.abs(ageDate.getUTCFullYear() - 1970);
 
-      if (data.data.history.length === 0) {
-        ledgerDiv.innerHTML = '<p>No clinical history found.</p>';
+      const currentDate = new Date().toLocaleDateString('en-GB');
+
+      // Build Diagnoses & Treatments HTML
+      let diagnosesHTML = '';
+      if (patient.Diagnoses && patient.Diagnoses.length > 0) {
+          patient.Diagnoses.forEach(diag => {
+              diagnosesHTML += `
+              <div style="margin-bottom: 15px; padding: 10px; background-color: #f8f9fa; border-left: 4px solid #2980b9;">
+                  <p style="margin: 0 0 5px 0;"><strong>Condition:</strong> ${diag.condition} <span style="color: #e74c3c;">(${diag.severity})</span></p>
+                  <p style="margin: 0 0 5px 0;"><strong>Date:</strong> ${new Date(diag.createdAt).toLocaleDateString('en-GB')}</p>
+                  <p style="margin: 0;"><strong>Treatment/Prescription:</strong> ${diag.prescription || 'No specific prescription recorded.'}</p>
+              </div>`;
+          });
       } else {
-        data.data.history.forEach(item => {
-          const docName = item.Doctor ? `Dr. ${item.Doctor.User.firstName} ${item.Doctor.User.lastName}` : 'Unknown';
-          ledgerDiv.innerHTML += `
-            <div style="margin-bottom: 15px; border-bottom: 1px dashed #eee; padding-bottom: 10px;">
-              <strong>Date:</strong> ${new Date(item.date).toLocaleDateString()} | <strong>Action:</strong> ${item.actionType} <br>
-              <strong>By:</strong> ${docName} <br>
-              <p style="margin: 5px 0 0 0;">${item.description}</p>
-            </div>
-          `;
-        });
+          diagnosesHTML = '<p style="color: #7f8c8d; font-style: italic;">No diagnoses recorded.</p>';
       }
 
-      const element = document.getElementById('pdfContent');
-      element.style.display = 'block';
-      await html2pdf().from(element).save('Patient_Medical_Record.pdf');
-      element.style.display = 'none';
-      
+      // Construct the Master PDF HTML
+      const pdfElement = document.createElement('div');
+      pdfElement.innerHTML = `
+      <div style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #333; padding: 40px; max-width: 800px; margin: auto; font-size: 14px; line-height: 1.6;">
+          
+          <div style="text-align: center; border-bottom: 3px solid #2c3e50; padding-bottom: 20px; margin-bottom: 30px;">
+              <h1 style="color: #2c3e50; margin: 0; font-size: 28px; letter-spacing: 1px;">CareTrack Clinic</h1>
+              <p style="color: #7f8c8d; margin: 5px 0 0 0; font-size: 16px;">Comprehensive Medical Record</p>
+              <p style="color: #95a5a6; margin: 5px 0 0 0; font-size: 12px;">Generated on: ${currentDate}</p>
+          </div>
+
+          <h3 style="color: #2980b9; border-bottom: 1px solid #bdc3c7; padding-bottom: 5px; margin-bottom: 15px; font-size: 18px;">1. Patient Demographics</h3>
+          <table style="width: 100%; border-collapse: collapse; margin-bottom: 30px;">
+              <tr>
+                  <td style="padding: 8px 0; width: 50%;"><strong>Full Name:</strong> ${patient.User?.firstName} ${patient.User?.lastName}</td>
+                  <td style="padding: 8px 0; width: 50%;"><strong>Gender:</strong> ${patient.gender || 'Not specified'}</td>
+              </tr>
+              <tr>
+                  <td style="padding: 8px 0;"><strong>Date of Birth:</strong> ${dob.toLocaleDateString('en-GB')}</td>
+                  <td style="padding: 8px 0;"><strong>Age:</strong> ${age} years</td>
+              </tr>
+              <tr>
+                  <td style="padding: 8px 0;"><strong>Blood Type:</strong> <span style="color: #c0392b; font-weight: bold;">${patient.bloodType || 'Unknown'}</span></td>
+                  <td style="padding: 8px 0;"><strong>Contact:</strong> ${patient.contactNumber || 'N/A'}</td>
+              </tr>
+          </table>
+
+          <h3 style="color: #2980b9; border-bottom: 1px solid #bdc3c7; padding-bottom: 5px; margin-bottom: 15px; font-size: 18px;">2. Baseline Medical Information</h3>
+          <table style="width: 100%; border-collapse: collapse; margin-bottom: 30px;">
+              <tr>
+                  <td style="padding: 8px 0; vertical-align: top; width: 30%;"><strong>Allergies:</strong></td>
+                  <td style="padding: 8px 0; color: #e74c3c;">${patient.allergies || 'None reported'}</td>
+              </tr>
+              <tr>
+                  <td style="padding: 8px 0; vertical-align: top;"><strong>Chronic Conditions:</strong></td>
+                  <td style="padding: 8px 0;">${patient.chronicConditions || 'None reported'}</td>
+              </tr>
+              <tr>
+                  <td style="padding: 8px 0; vertical-align: top;"><strong>Past Medical History:</strong></td>
+                  <td style="padding: 8px 0;">${patient.medicalHistory || 'No significant prior history.'}</td>
+              </tr>
+          </table>
+
+          <h3 style="color: #2980b9; border-bottom: 1px solid #bdc3c7; padding-bottom: 5px; margin-bottom: 15px; font-size: 18px;">3. Clinical Diagnoses & Treatments</h3>
+          <div style="margin-bottom: 30px;">
+              ${diagnosesHTML}
+          </div>
+
+          <div style="margin-top: 50px; padding-top: 20px; border-top: 1px dashed #bdc3c7; font-size: 11px; color: #7f8c8d; text-align: center;">
+              <p>This is an official electronic medical record generated by CareTrack Clinic MRMS. Information contained herein is strictly confidential.</p>
+              <p><strong>Authorized Signature:</strong> ___________________________</p>
+          </div>
+      </div>`;
+
+      // Trigger html2pdf
+      const opt = {
+          margin:       [10, 10, 10, 10],
+          filename:     `${patient.User?.firstName}_${patient.User?.lastName}_Medical_Report.pdf`,
+          image:        { type: 'jpeg', quality: 0.98 },
+          html2canvas:  { scale: 2, useCORS: true },
+          jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      };
+
+      html2pdf().set(opt).from(pdfElement).save();
+
     } catch(err) {
-      showNotification('Failed to generate PDF', 'error');
+      window.showNotification('Failed to generate PDF', 'error');
     }
   });
 
@@ -259,10 +317,10 @@ async function fetchDoctorAndPatient() {
     if (resPat.ok) {
       renderPatientProfile(patData.data.patient);
     } else {
-      showNotification(patData.message || 'Error loading patient', 'error');
+      window.showNotification(patData.message || 'Error loading patient', 'error');
     }
   } catch (err) {
-    showNotification('Failed to load data.', 'error');
+    window.showNotification('Failed to load data.', 'error');
   }
 }
 

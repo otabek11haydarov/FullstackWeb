@@ -57,14 +57,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 user.email = updatedData.email;
                 localStorage.setItem('user', JSON.stringify(user));
                 
-                showNotification('Profile updated successfully!', 'success');
+                window.showNotification('Profile updated successfully!', 'success');
                 updateUIElements(user);
             } else {
-                showNotification(data.message || 'Failed to update profile', 'error');
+                window.showNotification(data.message || 'Failed to update profile', 'error');
             }
         } catch (err) {
             console.error(err);
-            showNotification('A network error occurred.', 'error');
+            window.showNotification('A network error occurred.', 'error');
         } finally {
             saveBtn.innerHTML = originalText;
             saveBtn.disabled = false;
@@ -98,9 +98,7 @@ async function fetchDoctorDetails(user) {
                 // Also pre-fill phone number if available (Doctor table has no phone, but if there's a way, put it here)
             }
         }
-    } catch(err) {
-        console.error("Could not fetch extra doctor details", err);
-    }
+    } catch(err) { console.error(err); window.showNotification("An error occurred. Please try again.", "error"); }
 }
 
 function updateUIElements(user) {

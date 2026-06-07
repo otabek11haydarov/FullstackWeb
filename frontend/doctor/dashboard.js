@@ -10,7 +10,7 @@ const user = JSON.parse(userStr);
 
 // Security Check
 if (user.role !== 'Doctor' && user.role !== 'Super_Admin') {
-  showNotification('Access Denied. You must be a Doctor to view this page.');
+  window.showNotification('Access Denied. You must be a Doctor to view this page.');
   window.location.href = '../auth/login.html';
 }
 
@@ -104,9 +104,7 @@ async function fetchDashboardData() {
       window.fullWeeklySchedule = stats.weeklySchedule || [];
       renderSchedule(window.fullWeeklySchedule, 'upcoming');
     }
-  } catch (err) {
-    console.error('Error fetching dashboard data:', err);
-  }
+  } catch(err) { console.error(err); window.showNotification("An error occurred. Please try again.", "error"); }
 }
 
 let calendar;

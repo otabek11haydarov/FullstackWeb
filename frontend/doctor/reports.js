@@ -31,9 +31,7 @@ document.addEventListener('DOMContentLoaded', async () => {
           ${userObj.firstName.charAt(0)}${userObj.lastName.charAt(0)}
         </span>`;
       }
-    } catch (e) {
-      console.error('Error parsing user data:', e);
-    }
+    } catch(e) { console.error(e); window.showNotification("An error occurred. Please try again.", "error"); }
   }
 
   // Fetch Stats Data

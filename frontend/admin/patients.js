@@ -23,9 +23,14 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('filterDoctor').addEventListener('change', applyFilters);
 
   // Set Profile Footer
-  document.getElementById('userNameDisplay').textContent = `${user.firstName} ${user.lastName}`;
-  document.getElementById('userInitial').textContent = user.firstName.charAt(0).toUpperCase();
-  document.getElementById('userRoleDisplay').textContent = user.role.replace('_', ' ');
+  const userNameEl = document.getElementById('userNameDisplay');
+  if (userNameEl) userNameEl.textContent = `${user.firstName} ${user.lastName}`;
+  
+  const userInitialEl = document.getElementById('userInitial');
+  if (userInitialEl) userInitialEl.textContent = user.firstName.charAt(0).toUpperCase();
+  
+  const userRoleEl = document.getElementById('userRoleDisplay');
+  if (userRoleEl) userRoleEl.textContent = user.role.replace('_', ' ');
 
   fetchPatients();
   fetchDoctorsForDropdown();
@@ -66,10 +71,10 @@ async function fetchPatients() {
       patientsData = data.data.patients;
       renderPatients();
     } else {
-      showNotification(data.message, 'danger');
+      window.showNotification(data.message, 'error');
     }
   } catch (err) {
-    showNotification('Error fetching patients', 'danger');
+    window.showNotification('Error fetching patients', 'error');
   }
 }
 
@@ -100,9 +105,7 @@ async function fetchDoctorsForDropdown() {
         document.getElementById('filterDoctor').appendChild(option3);
       });
     }
-  } catch (err) {
-    console.error('Failed to load doctors for dropdown', err);
-  }
+  } catch(err) { console.error(err); window.showNotification("An error occurred. Please try again.", "error"); }
 }
 
 function calculateAge(dobStr) {
@@ -201,7 +204,7 @@ async function createPatient() {
   };
 
   if (!payload.firstName || !payload.lastName || !payload.email || !payload.password || !payload.age) {
-    showNotification('Please fill all required fields.', 'danger');
+    window.showNotification('Please fill all required fields.', 'error');
     return;
   }
 
@@ -218,17 +221,17 @@ async function createPatient() {
     const data = await res.json();
     if (res.ok || res.status === 201) {
       addPatientModalInstance.hide();
-      showNotification('Successfully added patient!', 'success');
+      window.showNotification('Successfully added patient!', 'success');
       document.getElementById('addPatientForm').reset();
       
       const newPat = data.data.patient;
       patientsData.unshift(newPat);
       renderPatients();
     } else {
-      showNotification(data.message || 'Error adding patient', 'danger');
+      window.showNotification(data.message || 'Error adding patient', 'error');
     }
   } catch (err) {
-    showNotification('Network error while adding patient', 'danger');
+    window.showNotification('Network error while adding patient', 'error');
   }
 }
 
@@ -241,7 +244,7 @@ async function deletePatient(id) {
       });
 
       if (res.ok || res.status === 204) {
-        showNotification('Patient removed', 'success');
+        window.showNotification('Patient removed', 'success');
         
         const row = document.getElementById(`patient-row-${id}`);
         if (row) row.remove();
@@ -249,10 +252,10 @@ async function deletePatient(id) {
         patientsData = patientsData.filter(p => p.id !== id);
       } else {
         const data = await res.json();
-        showNotification(data.message, 'danger');
+        window.showNotification(data.message, 'error');
       }
     } catch (err) {
-      showNotification('Error deleting patient', 'danger');
+      window.showNotification('Error deleting patient', 'error');
     }
   });
 }
@@ -308,7 +311,7 @@ async function updatePatient() {
     const data = await res.json();
     if (res.ok || res.status === 200) {
       editPatientModalInstance.hide();
-      showNotification('Updated successfully', 'success');
+      window.showNotification('Updated successfully', 'success');
 
       // Update local data
       const updatedPat = data.data.patient;
@@ -344,9 +347,9 @@ async function updatePatient() {
         tr.querySelector('.avatar').textContent = updatedPat.User.firstName.charAt(0);
       }
     } else {
-      showNotification(data.message || 'Error updating patient', 'danger');
+      window.showNotification(data.message || 'Error updating patient', 'error');
     }
   } catch (err) {
-    showNotification('Network error while updating patient', 'danger');
+    window.showNotification('Network error while updating patient', 'error');
   }
 }

@@ -15,10 +15,17 @@ if (user.role !== 'Super Admin') {
 
 // User Profile UI setup
 document.addEventListener('DOMContentLoaded', () => {
-  document.getElementById('userNameDisplay').textContent = `${user.firstName} ${user.lastName}`;
-  document.getElementById('userInitial').textContent = user.firstName.charAt(0).toUpperCase();
-  document.getElementById('headerUserInitial').textContent = user.firstName.charAt(0).toUpperCase();
-  document.getElementById('userRoleDisplay').textContent = 'Super Admin';
+  const userNameEl = document.getElementById('userNameDisplay');
+  if (userNameEl) userNameEl.textContent = `${user.firstName} ${user.lastName}`;
+  
+  const userInitEl = document.getElementById('userInitial');
+  if (userInitEl) userInitEl.textContent = user.firstName.charAt(0).toUpperCase();
+  
+  const headerInitEl = document.getElementById('headerUserInitial');
+  if (headerInitEl) headerInitEl.textContent = user.firstName.charAt(0).toUpperCase();
+  
+  const roleEl = document.getElementById('userRoleDisplay');
+  if (roleEl) roleEl.textContent = 'Super Admin';
   
   // Setup logout
   document.getElementById('logoutBtn').addEventListener('click', (e) => {
@@ -79,10 +86,10 @@ async function fetchAdmins() {
       adminsData = data.data.admins;
       renderAdmins();
     } else {
-      showNotification(data.message, 'danger');
+      window.showNotification(data.message, 'error');
     }
   } catch (err) {
-    showNotification('Error fetching admins', 'danger');
+    window.showNotification('Error fetching admins', 'error');
   }
 }
 
@@ -180,7 +187,7 @@ async function saveAdmin() {
     const data = await res.json();
     if (res.ok) {
       adminModal.hide();
-      showNotification(`Admin successfully ${id ? 'updated' : 'created'}!`, 'success');
+      window.showNotification(`Admin successfully ${id ? 'updated' : 'created'}!`, 'success');
       
       if (id) {
         // Update DOM dynamically
@@ -202,10 +209,10 @@ async function saveAdmin() {
         fetchAdmins();
       }
     } else {
-      showNotification(data.message, 'danger');
+      window.showNotification(data.message, 'error');
     }
   } catch (err) {
-    showNotification('Error saving admin', 'danger');
+    window.showNotification('Error saving admin', 'error');
   }
 }
 
@@ -218,7 +225,7 @@ async function deleteAdmin(id) {
       });
 
       if (res.ok || res.status === 204) {
-        showNotification('Admin successfully deleted!', 'success');
+        window.showNotification('Admin successfully deleted!', 'success');
         
         // Dynamically remove the row from the DOM
         const row = document.getElementById(`admin-row-${id}`);
@@ -228,10 +235,10 @@ async function deleteAdmin(id) {
         adminsData = adminsData.filter(a => a.id !== id);
       } else {
         const data = await res.json();
-        showNotification(data.message, 'danger');
+        window.showNotification(data.message, 'error');
       }
     } catch (err) {
-      showNotification('Error deleting admin', 'danger');
+      window.showNotification('Error deleting admin', 'error');
     }
   });
 }

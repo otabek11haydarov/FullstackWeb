@@ -59,14 +59,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 if(updatedData.contactNumber) user.contactNumber = updatedData.contactNumber;
                 localStorage.setItem('user', JSON.stringify(user));
                 
-                showNotification('Profile updated successfully!', 'success');
+                window.showNotification('Profile updated successfully!', 'success');
                 updateUIElements(user);
             } else {
-                showNotification(data.message || 'Failed to update profile', 'error');
+                window.showNotification(data.message || 'Failed to update profile', 'error');
             }
         } catch (err) {
             console.error(err);
-            showNotification('A network error occurred.', 'error');
+            window.showNotification('A network error occurred.', 'error');
         } finally {
             saveBtn.innerHTML = originalText;
             saveBtn.disabled = false;

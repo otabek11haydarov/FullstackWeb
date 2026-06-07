@@ -221,9 +221,7 @@ function syncReceptionistProfile() {
     if (headerInitialEl && user.firstName) {
     }
     
-  } catch (err) {
-    console.error("Error parsing user data:", err);
-  }
+  } catch(err) { console.error(err); window.showNotification("An error occurred. Please try again.", "error"); }
 }
 
 /**
@@ -260,9 +258,7 @@ function applyShiftLockdown() {
       if (user.shift) {
         isWorkingHours = checkShiftHours(user.shift);
       }
-    } catch (err) {
-      console.error("Failed to parse user for shift check:", err);
-    }
+    } catch(err) { console.error(err); window.showNotification("An error occurred. Please try again.", "error"); }
   }
 
   const banner = document.getElementById('shiftWarningBanner');

@@ -226,25 +226,65 @@ select option {
 /* ==========================================
    Toastify Glassmorphism Overrides
    ========================================== */
-.toastify {
-    background: rgba(13, 15, 20, 0.65) !important;
-    backdrop-filter: blur(16px) !important;
-    -webkit-backdrop-filter: blur(16px) !important;
-    border: 1px solid rgba(255, 255, 255, 0.08);
+/* Premium Toastify Overrides */
+.toastify.premium-toast {
     border-radius: 12px !important;
-    color: #ffffff !important;
-    font-family: inherit;
-    font-weight: 500;
-    padding: 16px 24px !important;
-    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3) !important;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    z-index: 9999 !important; /* Fix overlapping issues */
+    padding: 16px 20px !important;
+    font-family: inherit !important;
+    font-weight: 600 !important;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.4) !important;
+    display: flex !important;
+    align-items: center !important;
+    position: relative !important;
+    overflow: hidden !important; /* Contains the progress bar */
+    border: none !important;
+    z-index: 9999999 !important;
+    min-width: 300px;
+    justify-content: flex-start;
 }
-.toast-success { border-left: 4px solid #00b09b !important; }
-.toast-error { border-left: 4px solid #ff007f !important; }
-.toast-info { border-left: 4px solid #7b2ff7 !important; }
+
+/* Fix Close Button Alignment */
+.premium-toast .toast-close {
+    position: absolute !important;
+    right: 15px !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    opacity: 0.8 !important;
+    color: white !important;
+    font-size: 20px !important;
+    background: transparent !important;
+    padding: 0 !important;
+}
+.premium-toast .toast-close:hover { opacity: 1 !important; }
+
+/* Vibrant Gradient Backgrounds */
+.toast-success { background: linear-gradient(135deg, #11998e, #38ef7d) !important; color: white !important; }
+.toast-error { background: linear-gradient(135deg, #ff416c, #ff4b2b) !important; color: white !important; }
+.toast-info { background: linear-gradient(135deg, #7b2ff7, #0dcaf0) !important; color: white !important; }
+
+/* The Animated Time Indicator (Progress Bar) */
+.premium-toast::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 4px;
+    width: 100%;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 0 0 12px 12px;
+    /* 3 seconds matches the Toastify duration */
+    animation: toastTimeProgress 3s linear forwards; 
+}
+
+/* Pause animation when user hovers */
+.premium-toast:hover::after {
+    animation-play-state: paused;
+}
+
+@keyframes toastTimeProgress {
+    0% { width: 100%; }
+    100% { width: 0%; }
+}
 
 /* Container scroll settings */
 .timeline-container {

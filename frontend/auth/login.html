@@ -12,6 +12,7 @@
   <!-- FontAwesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <!-- Global CSS -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <link rel="stylesheet" href="../global.css">
   
   <style>
@@ -160,7 +161,7 @@
       
       const email = document.getElementById('email').value;
       const password = document.getElementById('password').value;
-      const alertBox = document.getElementById('alert-box');
+
       
       // Submit animation feedback
       const btn = e.target.querySelector('button');
@@ -181,6 +182,7 @@
         console.log('Login Response:', data);
 
         if (response.ok) {
+          window.showNotification("Successfully logged in! Welcome back.", "success");
           localStorage.setItem('token', data.token);
           
           // Safely access the user object depending on backend structure
@@ -189,28 +191,27 @@
 
           const userRole = userObj.role || data.role;
           
-          if (userRole === 'Admin' || userRole === 'Super Admin') {
-            window.location.href = '../admin/index.html';
-          } else if (userRole === 'Doctor') {
-            window.location.href = '../doctor/dashboard.html';
-          } else if (userRole === 'Receptionist') {
-            window.location.href = '../receptionist/dashboard.html';
-          } else if (userRole === 'Patient') {
-            window.location.href = '../patient/index.html';
-          } else {
-            // Fallback
-            window.location.href = '../index.html';
-          }
+          setTimeout(() => {
+            if (userRole === 'Admin' || userRole === 'Super Admin') {
+              window.location.href = '../admin/index.html';
+            } else if (userRole === 'Doctor') {
+              window.location.href = '../doctor/dashboard.html';
+            } else if (userRole === 'Receptionist') {
+              window.location.href = '../receptionist/dashboard.html';
+            } else if (userRole === 'Patient') {
+              window.location.href = '../patient/index.html';
+            } else {
+              // Fallback
+              window.location.href = '../index.html';
+            }
+          }, 1000); // Small delay to let the toast appear before redirect
         } else {
-          alertBox.textContent = data.message || 'Login failed';
-          alertBox.classList.remove('d-none');
+          window.showNotification(data.message || "Invalid credentials. Please try again.", "error");
           btn.innerHTML = originalText;
           btn.disabled = false;
         }
       } catch (err) {
-        console.error('Login error:', err);
-        alertBox.textContent = 'An error occurred. Please try again later.';
-        alertBox.classList.remove('d-none');
+        window.showNotification("An error occurred. Please try again later.", "error");
         btn.innerHTML = originalText;
         btn.disabled = false;
       }
@@ -219,4 +220,5 @@
   <script src="../transitions.js"></script>
 
 
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
 </body></html>

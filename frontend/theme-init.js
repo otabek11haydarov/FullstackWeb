@@ -19,8 +19,6 @@ document.addEventListener('DOMContentLoaded', () => {
           window.location.href = 'index.html'; // Redirect unauthorized users
         }
       }
-    } catch (e) {
-      console.error('Error parsing user data', e);
-    }
+    } catch(e) { console.error(e); window.showNotification("An error occurred. Please try again.", "error"); }
   }
 });

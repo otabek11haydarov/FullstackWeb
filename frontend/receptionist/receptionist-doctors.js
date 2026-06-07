@@ -40,9 +40,7 @@ function syncReceptionistProfile() {
     if (initEl && user.firstName) {
       initEl.textContent = user.firstName.charAt(0).toUpperCase();
     }
-  } catch (err) {
-    console.error("Error parsing user data:", err);
-  }
+  } catch(err) { console.error(err); window.showNotification("An error occurred. Please try again.", "error"); }
 }
 
 function checkShiftHours(shift) {
@@ -96,9 +94,7 @@ async function fetchDoctors() {
       populateSpecializations();
       renderDoctors(allDoctors);
     }
-  } catch (err) {
-    console.error("Error fetching doctors", err);
-  }
+  } catch(err) { console.error(err); window.showNotification("An error occurred. Please try again.", "error"); }
 }
 
 function populateSpecializations() {
@@ -180,5 +176,5 @@ function renderDoctors(doctorsList) {
 
 window.viewProfile = (id) => {
   // Read-only directory: alert for demonstration
-  showNotification("Viewing profile for Doctor ID: " + id);
+  window.showNotification("Viewing profile for Doctor ID: " + id);
 };

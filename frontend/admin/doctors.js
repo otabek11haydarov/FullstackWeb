@@ -75,10 +75,10 @@ async function fetchDoctors() {
       doctorsData = data.data.doctors;
       renderDoctors();
     } else {
-      showNotification(data.message, 'danger');
+      window.showNotification(data.message, 'error');
     }
   } catch (err) {
-    showNotification('Error fetching doctors', 'danger');
+    window.showNotification('Error fetching doctors', 'error');
   }
 }
 
@@ -157,7 +157,7 @@ async function saveDoctor() {
     const data = await res.json();
     if (res.ok) {
       doctorModal.hide();
-      showNotification('Doctor updated successfully', 'success');
+      window.showNotification('Doctor updated successfully', 'success');
       
       const docIndex = doctorsData.findIndex(d => d.id === id);
       if (docIndex !== -1) {
@@ -173,10 +173,10 @@ async function saveDoctor() {
         }
       }
     } else {
-      showNotification(data.message, 'danger');
+      window.showNotification(data.message, 'error');
     }
   } catch (err) {
-    showNotification('Error saving doctor', 'danger');
+    window.showNotification('Error saving doctor', 'error');
   }
 }
 
@@ -189,7 +189,7 @@ async function deleteDoctor(id) {
       });
 
       if (res.ok || res.status === 204) {
-        showNotification('Doctor removed', 'success');
+        window.showNotification('Doctor removed', 'success');
         
         const row = document.getElementById(`doctor-row-${id}`);
         if (row) row.remove();
@@ -197,10 +197,10 @@ async function deleteDoctor(id) {
         doctorsData = doctorsData.filter(d => d.id !== id);
       } else {
         const data = await res.json();
-        showNotification(data.message, 'danger');
+        window.showNotification(data.message, 'error');
       }
     } catch (err) {
-      showNotification('Error deleting doctor', 'danger');
+      window.showNotification('Error deleting doctor', 'error');
     }
   });
 }
@@ -216,7 +216,7 @@ async function createDoctor() {
   };
 
   if (!payload.firstName || !payload.lastName || !payload.email || !payload.password || !payload.specialization) {
-    showNotification('Please fill all required fields.', 'danger');
+    window.showNotification('Please fill all required fields.', 'error');
     return;
   }
 
@@ -233,7 +233,7 @@ async function createDoctor() {
     const data = await res.json();
     if (res.ok || res.status === 201) {
       addDoctorModalInstance.hide();
-      showNotification('Successfully added!', 'success');
+      window.showNotification('Successfully added!', 'success');
       document.getElementById('addDoctorForm').reset();
       
       const newDoc = data.data.doctor;
@@ -263,10 +263,10 @@ async function createDoctor() {
       `;
       tbody.prepend(tr); // Add to the top of the table
     } else {
-      showNotification(data.message || 'Error adding doctor', 'danger');
+      window.showNotification(data.message || 'Error adding doctor', 'error');
     }
   } catch (err) {
-    showNotification('Network error while adding doctor', 'danger');
+    window.showNotification('Network error while adding doctor', 'error');
   }
 }
 
@@ -313,7 +313,7 @@ async function updateDoctor() {
     const data = await res.json();
     if (res.ok || res.status === 200) {
       editDoctorModalInstance.hide();
-      showNotification('Updated successfully', 'success');
+      window.showNotification('Updated successfully', 'success');
 
       // Update local data
       const updatedDoc = data.data.doctor;
@@ -341,9 +341,9 @@ async function updateDoctor() {
         tr.querySelector('.avatar').textContent = updatedDoc.User.firstName.charAt(0);
       }
     } else {
-      showNotification(data.message || 'Error updating doctor', 'danger');
+      window.showNotification(data.message || 'Error updating doctor', 'error');
     }
   } catch (err) {
-    showNotification('Network error while updating doctor', 'danger');
+    window.showNotification('Network error while updating doctor', 'error');
   }
 }

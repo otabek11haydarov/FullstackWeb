@@ -56,9 +56,7 @@ function syncReceptionistProfile() {
     if (initEl && user.firstName) {
       initEl.textContent = user.firstName.charAt(0).toUpperCase();
     }
-  } catch (err) {
-    console.error("Error parsing user data:", err);
-  }
+  } catch(err) { console.error(err); window.showNotification("An error occurred. Please try again.", "error"); }
 }
 
 function checkShiftHours(shift) {
@@ -116,9 +114,7 @@ async function fetchDoctors() {
         if(select2) select2.insertAdjacentHTML('beforeend', option);
       });
     }
-  } catch (err) {
-    console.error("Error fetching doctors", err);
-  }
+  } catch(err) { console.error(err); window.showNotification("An error occurred. Please try again.", "error"); }
 }
 
 async function fetchPatients() {
@@ -138,9 +134,7 @@ async function fetchPatients() {
         });
       }
     }
-  } catch (err) {
-    console.error("Error fetching patients", err);
-  }
+  } catch(err) { console.error(err); window.showNotification("An error occurred. Please try again.", "error"); }
 }
 
 async function fetchAppointments() {
@@ -154,9 +148,7 @@ async function fetchAppointments() {
       allAppointments = data.data.appointments;
       renderAppointments();
     }
-  } catch (err) {
-    console.error("Error fetching appointments", err);
-  }
+  } catch(err) { console.error(err); window.showNotification("An error occurred. Please try again.", "error"); }
 }
 
 function renderAppointments() {
@@ -259,11 +251,9 @@ async function handleAppointmentSubmit(e) {
       modalInstance.hide();
       await fetchAppointments();
     } else {
-      showNotification(data.message || 'Error saving appointment');
+      window.showNotification(data.message || 'Error saving appointment');
     }
-  } catch (err) {
-    console.error('Submit error:', err);
-  }
+  } catch(err) { console.error(err); window.showNotification("An error occurred. Please try again.", "error"); }
 }
 
 window.editAppointment = (id) => {
@@ -301,9 +291,7 @@ window.deleteAppointment = async (id) => {
       await fetchAppointments();
     } else {
       const data = await res.json();
-      showNotification(data.message || 'Error deleting appointment');
+      window.showNotification(data.message || 'Error deleting appointment');
     }
-  } catch (err) {
-    console.error('Delete error:', err);
-  }
+  } catch(err) { console.error(err); window.showNotification("An error occurred. Please try again.", "error"); }
 };
