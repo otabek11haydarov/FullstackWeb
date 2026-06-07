@@ -8,6 +8,7 @@ const Appointment = require('./Appointment');
 const Receptionist = require('./Receptionist');
 const Activity = require('./Activity');
 const ClinicalHistory = require('./ClinicalHistory');
+const Review = require('./Review');
 
 // Associations
 // User and Doctor (One-to-One)
@@ -54,6 +55,14 @@ ClinicalHistory.belongsTo(Patient, { foreignKey: 'patientId' });
 Doctor.hasMany(ClinicalHistory, { foreignKey: 'doctorId', onDelete: 'SET NULL' });
 ClinicalHistory.belongsTo(Doctor, { foreignKey: 'doctorId' });
 
+// Doctor and Review (One-to-Many)
+Doctor.hasMany(Review, { foreignKey: 'doctorId', onDelete: 'CASCADE' });
+Review.belongsTo(Doctor, { foreignKey: 'doctorId' });
+
+// Appointment and Review (One-to-One)
+Appointment.hasOne(Review, { foreignKey: 'appointmentId', onDelete: 'CASCADE' });
+Review.belongsTo(Appointment, { foreignKey: 'appointmentId' });
+
 module.exports = {
   sequelize,
   User,
@@ -64,7 +73,8 @@ module.exports = {
   Appointment,
   Receptionist,
   Activity,
-  ClinicalHistory
+  ClinicalHistory,
+  Review
 };
 
 // ==========================================

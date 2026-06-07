@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CareTrack Clinic - My Appointments</title>
+  
+  <script src="../theme-init.js"></script>
+  
+  <link rel="icon" href="../assets/logo.png">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="../global.css">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+</head>
+<body class="text-white min-vh-100">
+
+  <div class="app-container">
+    
+    <div class="sidebar glass-sidebar d-flex flex-column p-3" style="width: 280px; min-height: 100vh; background: rgba(13, 15, 20, 0.7); backdrop-filter: blur(15px); border-right: 1px solid rgba(255,255,255,0.05);">
+        <div class="logo-container mb-5 text-center mt-3 d-flex flex-column align-items-center justify-content-center">
+            <img src="../assets/logo.png" alt="CareTrack Clinic Logo" class="img-fluid mb-2" style="max-height: 45px; object-fit: contain;">
+            <span class="badge bg-info text-dark rounded-pill px-3 py-1 fw-bold" style="letter-spacing: 0.5px;">Patient Portal</span>
+        </div>
+        
+        <ul class="nav nav-pills flex-column mb-auto gap-2">
+            <li class="nav-item">
+                <a href="patient-dashboard.html" class="nav-link text-secondary premium-hover"><i class="fas fa-home me-3"></i> Dashboard</a>
+            </li>
+            <li class="nav-item">
+                <a href="patient-doctors.html" class="nav-link text-secondary premium-hover"><i class="fas fa-user-md me-3"></i> Find a Doctor</a>
+            </li>
+            <li class="nav-item">
+                <a href="patient-appointments.html" class="nav-link text-secondary premium-hover active"><i class="fas fa-calendar-check me-3"></i> My Appointments</a>
+            </li>
+            <li class="nav-item">
+                <a href="patient-records.html" class="nav-link text-secondary premium-hover"><i class="fas fa-file-medical me-3"></i> Medical Records</a>
+            </li>
+        </ul>
+
+        <div class="mt-auto border-top border-secondary pt-3">
+            <div class="userProfileTarget w-100"></div> 
+        </div>
+    </div>
+
+    <main class="main-content">
+      <div class="header d-flex justify-content-between align-items-center mb-4">
+        <div>
+          <h2 class="fw-bold mb-1"><i class="fa-solid fa-calendar-check text-neon-cyan me-2"></i>My Appointments</h2>
+          <p class="text-white-50 mb-0">View and manage your scheduled visits</p>
+        </div>
+      </div>
+
+      <div class="glass-table table-responsive mt-4">
+        <table class="table table-hover table-borderless text-light align-middle mb-0">
+          <thead class="text-white-50">
+            <tr>
+              <th>Doctor</th>
+              <th>Date & Time</th>
+              <th>Reason</th>
+              <th>Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="appointmentsTableBody">
+            <!-- Injected via JS -->
+          </tbody>
+        </table>
+      </div>
+      
+    </main>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+  <script src="../transitions.js"></script>
+  <script src="patient-appointments.js"></script>
+</body>
+</html>

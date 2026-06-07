@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CareTrack Clinic - Patient Dashboard</title>
+  
+  <script src="../theme-init.js"></script>
+  
+  <link rel="icon" href="../assets/logo.png">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="../global.css">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+</head>
+<body class="text-white min-vh-100">
+
+  <div class="app-container">
+    
+    <div class="sidebar glass-sidebar d-flex flex-column p-3" style="width: 280px; min-height: 100vh; background: rgba(13, 15, 20, 0.7); backdrop-filter: blur(15px); border-right: 1px solid rgba(255,255,255,0.05);">
+        <div class="logo-container mb-5 text-center mt-3 d-flex flex-column align-items-center justify-content-center">
+            <img src="../assets/logo.png" alt="CareTrack Clinic Logo" class="img-fluid mb-2" style="max-height: 45px; object-fit: contain;">
+            <span class="badge bg-info text-dark rounded-pill px-3 py-1 fw-bold" style="letter-spacing: 0.5px;">Patient Portal</span>
+        </div>
+        
+        <ul class="nav nav-pills flex-column mb-auto gap-2">
+            <li class="nav-item">
+                <a href="patient-dashboard.html" class="nav-link text-secondary premium-hover active"><i class="fas fa-home me-3"></i> Dashboard</a>
+            </li>
+            <li class="nav-item">
+                <a href="patient-doctors.html" class="nav-link text-secondary premium-hover"><i class="fas fa-user-md me-3"></i> Find a Doctor</a>
+            </li>
+            <li class="nav-item">
+                <a href="patient-appointments.html" class="nav-link text-secondary premium-hover"><i class="fas fa-calendar-check me-3"></i> My Appointments</a>
+            </li>
+            <li class="nav-item">
+                <a href="patient-records.html" class="nav-link text-secondary premium-hover"><i class="fas fa-file-medical me-3"></i> Medical Records</a>
+            </li>
+        </ul>
+
+        <div class="mt-auto border-top border-secondary pt-3">
+            <div class="userProfileTarget w-100"></div> 
+        </div>
+    </div>
+
+    <main class="main-content">
+      <div class="header mb-5">
+          <h2 class="fw-bold mb-1"><i class="fa-solid fa-home text-neon-cyan me-2"></i>Welcome Back, <span id="welcomeName">Patient</span></h2>
+          <p class="text-white-50 mb-0">Here's an overview of your health profile</p>
+      </div>
+
+      <div class="row g-4">
+          <!-- Quick Stats -->
+          <div class="col-md-4">
+              <div class="glass-card p-4 text-center">
+                  <i class="fas fa-heartbeat fa-2x text-danger mb-3"></i>
+                  <h5 class="fw-bold">Health Status</h5>
+                  <p class="text-success mb-0" id="healthStatus">Excellent</p>
+              </div>
+          </div>
+          <div class="col-md-4">
+              <div class="glass-card p-4 text-center">
+                  <i class="fas fa-calendar-check fa-2x text-info mb-3"></i>
+                  <h5 class="fw-bold">Upcoming Appointments</h5>
+                  <h3 class="mb-0" id="upcomingCount">0</h3>
+              </div>
+          </div>
+          <div class="col-md-4">
+              <div class="glass-card p-4 text-center">
+                  <i class="fas fa-file-medical fa-2x text-warning mb-3"></i>
+                  <h5 class="fw-bold">Recent Diagnoses</h5>
+                  <h3 class="mb-0" id="diagnosisCount">0</h3>
+              </div>
+          </div>
+      </div>
+
+      <div class="mt-5">
+        <h4 class="fw-bold mb-4"><i class="fas fa-history text-neon-cyan me-2"></i>Recent Activity</h4>
+        <div class="timeline-container ps-3 border-start border-info border-2" id="recentActivityTimeline">
+            <!-- Injected via JS -->
+            <div class="text-white-50 small ms-3">Loading timeline...</div>
+        </div>
+      </div>
+      
+    </main>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+  <script src="../transitions.js"></script>
+  <script src="patient-dashboard.js"></script>
+</body>
+</html>

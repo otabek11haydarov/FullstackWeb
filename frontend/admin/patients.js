@@ -182,7 +182,7 @@ function renderPatients(filteredArray = patientsData) {
     if (target.classList.contains('delete-btn')) {
       deletePatient(id);
     } else if (target.classList.contains('view-btn')) {
-      window.location.href = `patient-profile.html?id=${id}`;
+      window.location.href = `admin-patient-profile.html?id=${id}`;
     } else if (target.classList.contains('edit-btn')) {
       openEditPatientModal(id);
     }

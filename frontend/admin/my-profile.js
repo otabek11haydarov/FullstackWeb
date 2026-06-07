@@ -10,9 +10,6 @@ let user = JSON.parse(userStr);
 
 document.addEventListener('DOMContentLoaded', () => {
   // Setup Sidebar User Info
-  document.getElementById('userNameDisplay').textContent = `${user.firstName} ${user.lastName}`;
-  document.getElementById('userInitial').textContent = user.firstName.charAt(0).toUpperCase();
-  document.getElementById('userRoleDisplay').textContent = user.role.replace('_', ' ');
 
   // Setup Left Column Profile Info
   document.getElementById('profileAvatar').textContent = user.firstName.charAt(0).toUpperCase();
@@ -75,8 +72,6 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem('user', JSON.stringify(user));
         
         // Update UI dynamically
-        document.getElementById('userNameDisplay').textContent = `${user.firstName} ${user.lastName}`;
-        document.getElementById('userInitial').textContent = user.firstName.charAt(0).toUpperCase();
         document.getElementById('profileAvatar').textContent = user.firstName.charAt(0).toUpperCase();
         document.getElementById('profileName').textContent = `${user.firstName} ${user.lastName}`;
         document.getElementById('profileEmailDisplay').textContent = user.email;

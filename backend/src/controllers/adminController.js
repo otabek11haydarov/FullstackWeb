@@ -1,4 +1,4 @@
-const { User, Appointment, Patient, Doctor, sequelize } = require('../models');
+const { User, Appointment, Patient, Doctor, Diagnosis, ClinicalHistory, sequelize } = require('../models');
 const bcrypt = require('bcryptjs');
 const { Op } = require('sequelize');
 
@@ -178,6 +178,51 @@ exports.getAllPatients = async (req, res) => {
   try {
     const patients = await Patient.findAll({ include: [{ model: User, attributes: ['firstName', 'lastName'] }] });
     res.status(200).json({ status: 'success', data: { patients } });
+  } catch (err) {
+    res.status(400).json({ status: 'fail', message: err.message });
+  }
+};
+
+exports.getPatientFullProfile = async (req, res) => {
+  try {
+    const patientId = req.params.id;
+    const patient = await Patient.findByPk(patientId, {
+      include: [
+        { model: User, attributes: { exclude: ['password'] } },
+        { model: Doctor, include: [{ model: User, attributes: ['firstName', 'lastName'] }] }
+      ]
+    });
+
+    if (!patient) return res.status(404).json({ status: 'fail', message: 'Patient not found' });
+
+    const diagnoses = await Diagnosis.findAll({
+      where: { patientId },
+      include: [{ model: Doctor, include: [{ model: User, attributes: ['firstName', 'lastName'] }] }],
+      order: [['createdAt', 'DESC']]
+    });
+
+    const appointments = await Appointment.findAll({
+      where: { patientId },
+      include: [{ model: Doctor, include: [{ model: User, attributes: ['firstName', 'lastName'] }] }],
+      order: [['date', 'DESC']]
+    });
+
+    const clinicalHistory = await ClinicalHistory.findAll({
+      where: { patientId },
+      include: [{ model: Doctor, include: [{ model: User, attributes: ['firstName', 'lastName'] }] }],
+      order: [['date', 'DESC']],
+      limit: 10
+    });
+
+    res.status(200).json({
+      status: 'success',
+      data: {
+        patient,
+        diagnoses,
+        appointments,
+        clinicalHistory
+      }
+    });
   } catch (err) {
     res.status(400).json({ status: 'fail', message: err.message });
   }

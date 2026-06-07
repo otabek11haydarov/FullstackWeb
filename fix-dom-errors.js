@@ -17,7 +17,7 @@ function processJsFile(filePath) {
     let changed = false;
 
     const filteredLines = lines.filter(line => {
-        if (line.match(/(userNameDisplay|userInitial|userRoleDisplay|headerInitialEl|avatar|profileAvatar)\.textContent\s*=/)) {
+        if (line.match(/(userNameDisplay|userInitial|userRoleDisplay|headerInitialEl|avatar|profileAvatar)\.textContent\s*=/) || line.match(/getElementById\(['"](userNameDisplay|userInitial|userRoleDisplay|headerInitialEl)['"]\)\.textContent\s*=/)) {
             changed = true;
             return false; // delete this line
         }

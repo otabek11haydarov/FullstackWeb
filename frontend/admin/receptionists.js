@@ -20,9 +20,6 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('submitEditReceptionistBtn').addEventListener('click', updateReceptionist);
 
   // Set Profile Footer
-  document.getElementById('userNameDisplay').textContent = `${user.firstName} ${user.lastName}`;
-  document.getElementById('userInitial').textContent = user.firstName.charAt(0).toUpperCase();
-  document.getElementById('userRoleDisplay').textContent = user.role.replace('_', ' ');
 
   fetchReceptionists();
 });

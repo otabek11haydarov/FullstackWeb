@@ -115,7 +115,7 @@ function initCalendar() {
   
   calendar = new FullCalendar.Calendar(calendarEl, {
     initialView: 'timeGridWeek',
-    weekends: false,
+    weekends: true,
     slotDuration: '00:30:00',
     slotMinTime: '08:00:00',
     slotMaxTime: '19:00:00',

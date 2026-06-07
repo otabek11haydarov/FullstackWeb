@@ -12,6 +12,14 @@ router
   .get(patientController.getAllPatients)
   .post(roleMiddleware.restrictTo('Super Admin', 'Admin'), patientController.createPatient);
 
+// Patient Portal Routes
+router.get('/portal/dashboard', roleMiddleware.restrictTo('Patient'), patientController.getPatientDashboard);
+router.get('/portal/doctors', roleMiddleware.restrictTo('Patient', 'Admin', 'Super Admin'), patientController.getDoctors);
+router.get('/portal/doctors-with-slots', roleMiddleware.restrictTo('Patient', 'Admin', 'Super Admin'), patientController.getDoctorsWithSlots);
+router.post('/portal/book-appointment', roleMiddleware.restrictTo('Patient'), patientController.bookAppointment);
+router.get('/portal/records', roleMiddleware.restrictTo('Patient'), patientController.getRecords);
+router.post('/portal/reviews', roleMiddleware.restrictTo('Patient'), patientController.submitReview);
+
 router
   .route('/:id')
   .get(patientController.getPatient)

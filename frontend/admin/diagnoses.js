@@ -23,9 +23,6 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('filterDiagDoctor').addEventListener('change', applyFilters);
 
   // Set Profile Footer
-  document.getElementById('userNameDisplay').textContent = `${user.firstName} ${user.lastName}`;
-  document.getElementById('userInitial').textContent = user.firstName.charAt(0).toUpperCase();
-  document.getElementById('userRoleDisplay').textContent = user.role.replace('_', ' ');
 
   // Set default date for Add Modal
   document.getElementById('addDate').valueAsDate = new Date();

@@ -155,7 +155,9 @@
         if (response.ok) {
           localStorage.setItem('token', data.token);
           localStorage.setItem('user', JSON.stringify(data.data.user));
-          window.location.href = '../patient/index.html';
+          setTimeout(() => {
+                window.location.href = '../patient/patient-dashboard.html';
+            }, 1000);
         } else {
           alertBox.textContent = data.message || 'Registration failed';
           alertBox.classList.remove('d-none');

@@ -1,0 +1,50 @@
+/* Patient Portal Global Layout & Glassmorphism */
+
+.app-container {
+    display: flex;
+    min-height: 100vh;
+    background: var(--bg-body);
+}
+
+/* --- UNIFIED GLASS SIDEBAR STYLES --- */
+.glass-sidebar {
+    background: rgba(13, 15, 20, 0.7) !important;
+    backdrop-filter: blur(15px) !important;
+    border-right: 1px solid rgba(255, 255, 255, 0.05) !important;
+    position: fixed;
+    height: 100vh;
+    overflow-y: auto;
+    z-index: 1000;
+}
+
+.main-content {
+    flex: 1;
+    margin-left: 280px; /* matches sidebar width */
+    padding: 30px 40px;
+    overflow-y: auto;
+}
+
+.glass-sidebar .nav-link {
+    color: #8b9eb0 !important; /* Inactive color */
+    padding: 12px 20px !important;
+    border-radius: 8px !important;
+    transition: all 0.3s ease !important;
+    margin-bottom: 5px !important;
+    border-left: 3px solid transparent !important;
+    font-weight: 500 !important;
+    display: flex !important;
+    align-items: center !important;
+}
+
+.glass-sidebar .nav-link:hover {
+    color: #0dcaf0 !important;
+    background: rgba(13, 202, 240, 0.05) !important;
+}
+
+/* THE EXACT ACTIVE STATE FROM SCREENSHOT */
+.glass-sidebar .nav-link.active {
+    color: #0dcaf0 !important;
+    background: rgba(13, 202, 240, 0.1) !important;
+    border-left: 3px solid #0dcaf0 !important;
+    box-shadow: inset 3px 0 15px rgba(13, 202, 240, 0.1) !important;
+}

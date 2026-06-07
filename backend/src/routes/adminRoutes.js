@@ -35,5 +35,6 @@ router
 // Dropdown Helper Routes
 router.route('/doctors').get(adminController.getAllDoctors);
 router.route('/patients').get(adminController.getAllPatients);
+router.route('/patients/:id/profile').get(adminController.getPatientFullProfile);
 
 module.exports = router;
