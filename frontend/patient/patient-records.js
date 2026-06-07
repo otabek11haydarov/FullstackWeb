@@ -20,6 +20,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     
     let globalRecords = { appointments: [], diagnoses: [] };
 
+    // Sidebar Logout
+    document.getElementById('sidebarLogoutBtn')?.addEventListener('click', () => {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        window.location.href = '../auth/login.html';
+    });
+
     async function fetchRecords() {
         try {
             const response = await fetch('http://localhost:8000/api/patients/portal/records', {

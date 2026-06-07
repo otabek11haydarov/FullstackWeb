@@ -17,6 +17,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     const filterBtns = document.querySelectorAll('.filter-btn');
     const appointmentDateInput = document.getElementById('appointmentDatePicker');
     
+    // Sidebar Logout
+    document.getElementById('sidebarLogoutBtn')?.addEventListener('click', () => {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        window.location.href = '../auth/login.html';
+    });
+    
     // Set default date to today
     const today = new Date().toISOString().split('T')[0];
     if (appointmentDateInput) {

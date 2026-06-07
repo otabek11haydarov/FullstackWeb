@@ -22,6 +22,8 @@
 
   <div class="app-container">
     
+    <div class="sidebar-backdrop" id="sidebarBackdrop">
+        <button class="btn text-white mobile-close-btn d-lg-none" id="mobileCloseSidebar" style="position: absolute; top: 15px; right: 15px; background: transparent; border: none; font-size: 1.5rem; z-index: 1060;"><i class="fas fa-times"></i></button></div>
     <aside class="sidebar">
       <div class="brand">
         <img src="../assets/logo.png" alt="CareTrack Logo" style="width: 32px; height: 32px; border-radius: 8px;" class="me-2 shadow-sm">
@@ -54,6 +56,7 @@
     </aside>
 
     <main class="main-content">
+      <button id="mobileSidebarToggle" class="btn btn-outline-info d-lg-none mb-3" style="border-radius: 8px; width: fit-content;"><i class="fas fa-bars me-2"></i> Menu</button>
       <div class="header">
         <div>
           <a href="my-patients.html" class="text-white-50 text-decoration-none"><i class="fa-solid fa-arrow-left me-2"></i> Back to Patients</a>

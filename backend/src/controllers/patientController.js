@@ -495,3 +495,58 @@ exports.bookAppointment = async (req, res) => {
     res.status(500).json({ success: false, message: "Failed to book appointment" });
   }
 };
+
+// ==========================================
+// PATIENT SELF-SERVICE PROFILE
+// ==========================================
+exports.getMyProfile = async (req, res) => {
+  try {
+    const patient = await Patient.findOne({
+      where: { userId: req.user.id },
+      include: [
+        { model: User, attributes: { exclude: ['password'] } },
+        { model: Doctor, include: [{ model: User, attributes: ['firstName', 'lastName', 'email'] }] }
+      ]
+    });
+
+    if (!patient) return res.status(404).json({ success: false, message: 'Patient profile not found.' });
+
+    res.status(200).json({ success: true, data: { patient } });
+  } catch (error) {
+    console.error("Get profile error:", error);
+    res.status(500).json({ success: false, message: "Failed to fetch profile" });
+  }
+};
+
+exports.updateMyProfile = async (req, res) => {
+  try {
+    const { firstName, lastName, contactNumber, address, allergies, chronicConditions, bloodType } = req.body;
+
+    const user = await User.findByPk(req.user.id);
+    if (!user) return res.status(404).json({ success: false, message: 'User not found.' });
+
+    // Update User
+    if (firstName) user.firstName = firstName;
+    if (lastName) user.lastName = lastName;
+    await user.save({ hooks: false });
+
+    // Update Patient
+    const patient = await Patient.findOne({ where: { userId: req.user.id } });
+    if (patient) {
+      if (contactNumber !== undefined) patient.contactNumber = contactNumber;
+      if (address !== undefined) patient.address = address;
+      if (allergies !== undefined) patient.allergies = allergies;
+      if (chronicConditions !== undefined) patient.chronicConditions = chronicConditions;
+      if (bloodType !== undefined) patient.bloodType = bloodType;
+      await patient.save();
+    }
+
+    // Refresh localStorage user data on client side
+    const updatedUser = await User.findByPk(req.user.id, { attributes: { exclude: ['password'] } });
+
+    res.status(200).json({ success: true, message: 'Profile updated successfully!', data: { user: updatedUser } });
+  } catch (error) {
+    console.error("Update profile error:", error);
+    res.status(500).json({ success: false, message: "Failed to update profile" });
+  }
+};

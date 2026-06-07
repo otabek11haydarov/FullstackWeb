@@ -472,3 +472,54 @@ select option {
     color: white;
     box-shadow: 0 10px 30px rgba(0,0,0,0.5);
 }
+
+/* --- RESPONSIVE SIDEBAR OVERLAY --- */
+@media (max-width: 991.98px) {
+    .glass-sidebar, .sidebar {
+        position: fixed !important;
+        top: 0;
+        left: -320px; /* Hidden off-screen by default */
+        height: 100vh;
+        z-index: 1050 !important; /* Extremely high z-index to stay above everything */
+        transition: left 0.3s ease-in-out !important;
+        box-shadow: 10px 0 30px rgba(0, 0, 0, 0.5) !important;
+    }
+
+    .glass-sidebar.show, .sidebar.show {
+        left: 0; /* Slide in */
+    }
+
+    /* Mobile close button inside sidebar */
+    .mobile-close-btn {
+        display: block !important;
+    }
+    
+    .main-content {
+        margin-left: 0 !important;
+    }
+}
+
+/* Hide mobile close button on desktop */
+.mobile-close-btn {
+    display: none;
+}
+
+/* Backdrop strictly for mobile */
+.sidebar-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(3px);
+    z-index: 1040; /* Just below the sidebar */
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease-in-out;
+}
+
+.sidebar-backdrop.show {
+    opacity: 1;
+    visibility: visible;
+}

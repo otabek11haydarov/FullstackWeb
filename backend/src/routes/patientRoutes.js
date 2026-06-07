@@ -19,6 +19,8 @@ router.get('/portal/doctors-with-slots', roleMiddleware.restrictTo('Patient', 'A
 router.post('/portal/book-appointment', roleMiddleware.restrictTo('Patient'), patientController.bookAppointment);
 router.get('/portal/records', roleMiddleware.restrictTo('Patient'), patientController.getRecords);
 router.post('/portal/reviews', roleMiddleware.restrictTo('Patient'), patientController.submitReview);
+router.get('/portal/profile', roleMiddleware.restrictTo('Patient'), patientController.getMyProfile);
+router.put('/portal/profile', roleMiddleware.restrictTo('Patient'), patientController.updateMyProfile);
 
 router
   .route('/:id')

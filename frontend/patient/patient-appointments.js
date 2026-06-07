@@ -14,6 +14,13 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const tbody = document.getElementById('appointmentsTableBody');
 
+    // Sidebar Logout
+    document.getElementById('sidebarLogoutBtn')?.addEventListener('click', () => {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        window.location.href = '../auth/login.html';
+    });
+
     async function fetchAppointments() {
         try {
             const response = await fetch('http://localhost:8000/api/patients/portal/records', {

@@ -37,6 +37,29 @@ document.addEventListener('DOMContentLoaded', () => {
           link.classList.add('active');
       }
   });
+
+  // Mobile Sidebar Toggle Logic
+  const mobileSidebarToggle = document.getElementById('mobileSidebarToggle');
+  const mobileCloseSidebar = document.getElementById('mobileCloseSidebar');
+  const sidebarBackdrop = document.getElementById('sidebarBackdrop');
+  const sidebar = document.querySelector('.sidebar, .glass-sidebar');
+
+  if (mobileSidebarToggle && sidebar && sidebarBackdrop) {
+      mobileSidebarToggle.addEventListener('click', () => {
+          sidebar.classList.add('show');
+          sidebarBackdrop.classList.add('show');
+      });
+
+      const closeSidebar = () => {
+          sidebar.classList.remove('show');
+          sidebarBackdrop.classList.remove('show');
+      };
+
+      sidebarBackdrop.addEventListener('click', closeSidebar);
+      if (mobileCloseSidebar) {
+          mobileCloseSidebar.addEventListener('click', closeSidebar);
+      }
+  }
 });
 
 /**

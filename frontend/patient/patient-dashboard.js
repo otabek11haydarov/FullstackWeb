@@ -17,6 +17,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         welcomeName.textContent = `${userObj.firstName} ${userObj.lastName}`;
     }
 
+    // Sidebar Logout
+    document.getElementById('sidebarLogoutBtn')?.addEventListener('click', () => {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        window.location.href = '../auth/login.html';
+    });
+
     // Fetch brief overview metrics (Appointments & Diagnoses)
     async function fetchOverview() {
         try {
